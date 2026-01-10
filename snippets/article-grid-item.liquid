@@ -1,0 +1,80 @@
+{%- assign fixed_aspect_ratio = false -%}
+{% unless image_size == 'natural' %}
+  {%- assign fixed_aspect_ratio = true -%}
+{% endunless %}
+
+<div class="grid__item{% if is_featured %} featured-article{% endif %} {{ grid_item_width }}" data-aos="row-of-{{ per_row }}">
+  <article class="blog-card">
+    <div class="blog-card__image-container">
+      {%- if article.image -%}
+        <a href="{{ article.url }}" class="blog-card__image-link" aria-label="{{ article.title | escape }}">
+          {%- if fixed_aspect_ratio -%}
+            <div class="blog-card__image-wrap">
+              <div class="blog-card__image">
+                {%- if article.tags contains 'featured' or article.tags contains 'Featured' -%}
+                  <div class="grid-product__tag grid-product__tag--sale">
+                    Featured
+                  </div>
+                {%- endif -%}
+                {%- render 'image-element',
+                  img: article.image,
+                  sizes: '(min-width: 768px) 33vw, 100vw',
+                  widths: '360, 540, 720, 900, 1080'
+                -%}
+              </div>
+            </div>
+          {%- else -%}
+            <div class="blog-card__image-wrap" style="padding-bottom: {{ 100 | divided_by: article.image.aspect_ratio }}%;">
+              {%- render 'image-element',
+                img: article.image,
+                sizes: '(min-width: 768px) 33vw, 100vw',
+                widths: '360, 540, 720, 900, 1080'
+              -%}
+            </div>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="blog-card__content">
+      <div class="blog-card__meta">
+        {%- if article.tags.size > 0 -%}
+          {%- assign display_tag = article.tags.first -%}
+          {%- if display_tag == 'Featured' and article.tags.size > 1 -%}
+            {%- assign display_tag = article.tags[1] -%}
+          {%- elsif display_tag == 'Featured' -%}
+            {%- assign display_tag = nil -%}
+          {%- endif -%}
+          {%- if display_tag -%}
+            <span class="blog-card__tag">{{ display_tag }}</span>
+          {%- else -%}
+            <span class="blog-card__tag empty"></span>
+          {%- endif -%}
+        {%- else -%}
+          <span class="blog-card__tag empty"></span>
+        {%- endif -%}
+        {%- if section.settings.blog_show_date -%}
+          <time class="blog-card__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+            <img class="icon" src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/calendar.webp?v=1740635475" alt="calendar icon">
+            {{ article.published_at | date: '%B %Y' }}
+          </time>
+        {%- endif -%}
+      </div>
+
+      <h2 class="blog-card__title">
+        <a href="{{ article.url }}">{{ article.title }}</a>
+      </h2>
+      {%- if request.page_type == 'blog' -%}
+        {%- assign trunct = 20 -%}
+      {%- else -%}
+        {%- assign trunct = 15 -%}
+      {%- endif -%}
+
+      {%- if section.settings.blog_show_excerpt or request.page_type == 'blog' -%}
+        <div class="blog-card__excerpt">
+          {{ article.content | strip_html | truncatewords: trunct }} {% unless request.page_type == 'index' %}<a href="{{ article.url }}" class="blog-card__read-more">more</a>{% endunless %}
+        </div>
+      {%- endif -%}
+    </div>
+  </article>
+</div>

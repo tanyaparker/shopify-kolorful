@@ -1,0 +1,57 @@
+<div class="page-width">
+
+  <div class="simple_cta-wrap">
+    <div class="cus_title">
+    {% if section.settings.heading != blank %}  
+    <h4 class="cus_heading">{{ section.settings.heading }}</h4>
+    {% endif %}
+    {% if section.settings.text != blank %} 
+    <p class="cus_p">{{ section.settings.text }}</p>
+      {% endif %}
+   </div> 
+    {% if section.settings.btn_link != blank %}
+      <a class="cus_btn" href="{{ section.settings.btn_link }}" title="">{{ section.settings.btn_text }}</a>
+    {% endif %}
+
+  </div>
+  
+</div>
+
+
+{% schema %}
+  {
+    "name": "Simple CTA",
+    "class": "simple_cta-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Sale up to 33% off!"
+      },
+      {
+        "type": "text",
+        "id": "text",
+        "label": "Text",
+        "default": "SALE ENDS AUGUST 30TH AT MIDNIGHT"
+      },
+      {
+        "type": "text",
+        "id": "btn_text",
+        "label": "Button Text",
+        "default": "SHOP SALE"
+      },
+      {
+        "type": "url",
+        "id": "btn_link",
+        "label": "Button Link"
+      }
+    ], 
+    "presets": [
+      {
+        "name": "Simple CTA",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

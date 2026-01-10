@@ -1,0 +1,28 @@
+<script>
+function onSdkReady() {
+    const moduleName = window.gw.sdk.common.constants.modules.REVIEWS;
+
+    window.gw.sdk.common.events.runIfModuleReady(moduleName, () => {
+        console.log(window.gw.sdk.reviews.methods);
+    });
+    console.log("SDK is ready");
+}
+
+if (window.gw && window.gw.sdk) {
+    onSdkReady();
+} else {
+    document.addEventListener("gwSdkReady", onSdkReady);
+}
+</script>
+
+{% schema %}
+  {
+    "name": "Growave Trust Badge",
+    "settings": [],
+    "presets": [
+      {
+        "name": "Growave Trust Badge"
+      }
+    ]
+  }
+{% endschema %}

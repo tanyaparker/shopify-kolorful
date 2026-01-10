@@ -1,0 +1,151 @@
+{%- style -%}
+  {%- if section.settings.custom_font == 'heading' -%}
+    #shopify-section-{{ section.id }} .text_line {
+      font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+    }
+  {%- elsif section.settings.custom_font == 'body' -%}
+    #shopify-section-{{ section.id }} .text_line {
+      font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+    }
+  {%- elsif section.settings.custom_font == 'custom' -%}
+    #shopify-section-{{ section.id }} .text_line {
+      font-family: 'Friendly Schoolmates';
+    }
+  {%- endif -%}
+  @media screen and (max-width: 767px) {
+    #shopify-section-{{ section.id }} .text_line {
+      font-size: {{ section.settings.heading_font_size_mobile }}px !important;
+      color: #413A45;
+      font-weight: 700;
+    }
+  }
+  @media only screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .text_line {
+      font-size: {{ section.settings.heading_font_size_laptop }}px !important;
+    }
+  }
+  @media only screen and (min-width: 1600px) {
+    #shopify-section-{{ section.id }} .text_line {
+      font-size: {{ section.settings.heading_font_size_desktop }}px !important;
+    }
+  }
+{%- endstyle -%}
+<div class="simple_text-wrap simple_text-wrap__{{ section.id }}">
+
+  <div class="page-width">
+
+    <div class="simple_text-inner">
+      {% if section.settings.text1 != blank %}
+        <p class="text_line text_line1">{{ section.settings.text1 }}</p>
+      {% endif %}
+      {% if section.settings.text2 != blank %}
+        <p class="text_line text_line2">{{ section.settings.text2 }}</p>
+      {% endif %}
+      {% if section.settings.text3 != blank %}
+        <p class="text_line text_line3">{{ section.settings.text3 }}</p>
+      {% endif %}
+    </div>
+
+  </div>
+  
+</div>
+
+{%- style -%}
+  .simple_text-wrap__{{ section.id }} .page-width {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    background-image: url({{ section.settings.background | img_url: 'master' }});
+  }
+}
+{%- endstyle -%}
+
+
+{% schema %}
+  {
+    "name": "Simple Text",
+    "class": "simple_text-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "text1",
+        "label": "Text Line1"
+      },
+      {
+        "type": "text",
+        "id": "text2",
+        "label": "Text Line2"
+      },
+      {
+        "type": "text",
+        "id": "text3",
+        "label": "Text Line3"
+      },
+      {
+        "type": "image_picker",
+        "id": "background",
+        "label": "Background"
+      },
+      {
+        "type": "header",
+        "content": "Style"
+      },
+      {
+        "type": "select",
+        "id": "custom_font",
+        "label": "Heading Font Family",
+        "default": "body",
+        "options": [
+          {
+            "value": "heading",
+            "label": "Heading"
+          },
+          {
+            "value": "body",
+            "label": "Body"
+          },
+          {
+            "value": "custom",
+            "label": "Friendly Schoolmates"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_desktop",
+        "label": "Desktop | Text Line Font Size",
+        "default": 24,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_laptop",
+        "label": "Laptop | Text Line Font Size",
+        "default": 24,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_mobile",
+        "label": "Mobile | Text Line Font Size",
+        "default": 18,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      }
+    ], 
+    "presets": [
+      {
+        "name": "Simple Text",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

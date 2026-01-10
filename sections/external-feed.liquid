@@ -1,0 +1,321 @@
+{%- style -%}
+  {%- if section.settings.custom_font == 'heading' -%}
+    #shopify-section-{{ section.id }} h2.cus_heading {
+      font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+    }
+  {%- elsif section.settings.custom_font == 'body' -%}
+    #shopify-section-{{ section.id }} h2.cus_heading {
+      font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+    }
+  {%- elsif section.settings.custom_font == 'custom' -%}
+    #shopify-section-{{ section.id }} h2.cus_heading {
+      font-family: 'Friendly Schoolmates';
+    }
+  {%- elsif section.settings.custom_font == 'custom-new' -%}
+    #shopify-section-{{ section.id }} h2.cus_heading {
+      font-family: 'Times Sans Serif';
+    }
+  {%- endif -%}
+  {%- if section.settings.custom_font_sub == 'heading' -%}
+    #shopify-section-{{ section.id }} ul.ig-feed-subtitle {
+      font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+    }
+  {%- elsif section.settings.custom_font_sub == 'body' -%}
+    #shopify-section-{{ section.id }} ul.ig-feed-subtitle {
+      font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+    }
+  {%- elsif section.settings.custom_font_sub == 'custom' -%}
+    #shopify-section-{{ section.id }} ul.ig-feed-subtitle {
+      font-family: 'Friendly Schoolmates';
+    }
+  {%- elsif section.settings.custom_font_sub == 'custom-new' -%}
+    #shopify-section-{{ section.id }} ul.ig-feed-subtitle {
+      font-family: 'Times Sans Serif';
+    }
+  {%- endif -%}
+  @media screen and (max-width: 767px) {
+    #shopify-section-{{ section.id }} h2.cus_heading {
+      font-size: {{ section.settings.heading_font_size_mobile }}px !important;
+    }
+    #shopify-section-{{ section.id }} ul.ig-feed-subtitle {
+      font-size: {{ section.settings.subheading_font_size_mobile }}px !important;
+    }
+  }
+  @media only screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} h2.cus_heading {
+      font-size: {{ section.settings.heading_font_size_laptop }}px !important;
+    }
+    #shopify-section-{{ section.id }} ul.ig-feed-subtitle {
+      font-size: {{ section.settings.subheading_font_size_laptop }}px !important;
+    }
+  }
+  @media only screen and (min-width: 1600px) {
+    #shopify-section-{{ section.id }} h2.cus_heading {
+      font-size: {{ section.settings.heading_font_size_desktop }}px !important;
+    }
+    #shopify-section-{{ section.id }} ul.ig-feed-subtitle {
+      font-size: {{ section.settings.subheading_font_size_desktop }}px !important;
+    }
+  }
+  .ext-feed_wrap {
+    display: grid;
+    /* grid-template-columns: repeat(5, 1fr); */
+    grid-template-columns: repeat(5, 260px);
+    gap: 13px;
+    justify-content: center;
+  }
+  @media only screen and (max-width: 960px) {
+     .feed_block .image-wrap {
+       height: 100% !important;
+     }
+    .ext-feed_wrap {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 0 10px;
+    }
+    .ext-feed {
+      margin: 0;
+      padding-top: 40px;
+    }
+    .ext-feed .section-header {
+      margin-bottom: 10px;
+    }
+  }
+{%- endstyle -%}
+{% if section.blocks.size > 0 %}
+<div class="ext-feed_inner">
+
+  <div class="page-width">
+
+    {%- if section.settings.title != blank -%}
+      <div class="section-header">
+        <h2 class="cus_heading">{{ section.settings.title }}</h2>
+        <ul class="ig-feed-subtitle">
+          <li>
+            <a href="https://instagram.com/getkolorful" >Follow Us</a>
+            <span style="margin-left: 5px;">|</span>
+          </li>
+          <li>
+            <a href="https://instagram.com/getkolorful" target="_blank">Tag Us</a>
+            <span style="margin-left: 5px;">|</span>
+          </li>
+          <li>
+            <a href="https://instagram.com/getkolorful" target="_blank">Get Featured</a>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+   
+    {%- liquid
+      assign items_per_row = 'items_one-fifth'
+
+      case items
+        when 3
+          assign items_per_row = 'items_one-third'
+        when 4
+          assign items_per_row = 'items_one-quarter'
+        when 6
+          assign items_per_row = 'items_one-sixth'
+      endcase
+    -%}
+    <div class="ext-feed_wrap {{ items_per_row }} grid grid--uniform">
+      
+      {% assign i = 0 %}
+      {% for block in section.blocks %}
+        {% assign i = i | plus: 1 %}
+        <div class="feed_block feed_block{{ i }} grid__item " >
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}" target="_blank" title="">
+          {% endif %}
+            {%- if block.settings.image != blank -%}
+            <div class="image-wrap">
+              {%- liquid
+                assign sizeVariable = 'calc(0.4 * 50vw)'
+                assign fallback = '40vw'
+                assign loading = false
+              -%}
+              {%- render 'image-element',
+                img: block.settings.image,
+                widths: '180, 300, 360, 540, 750, 900, 1080',
+                loading: loading,
+                sizeVariable: sizeVariable,
+                fallback: fallback
+              -%}
+            </div>
+            {% else %}
+            <div class="image-wrap">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            {% endif %}
+          {%- if block.settings.link != blank -%}
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+  
+    </div>
+    
+  </div>
+
+</div>
+{% endif %}
+
+
+{% schema %}
+  {
+    "name": "External Feed",
+    "class": "ext-feed",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Title"
+      },
+      {
+        "type": "range",
+        "id": "items",
+        "label": "Items per row",
+        "default": 5,
+        "min": 3,
+        "max": 6,
+        "step": 1
+      },
+      {
+        "type": "header",
+        "content": "Style"
+      },
+      {
+        "type": "select",
+        "id": "custom_font",
+        "label": "Heading Font Family",
+        "default": "custom",
+        "options": [
+          {
+            "value": "heading",
+            "label": "Heading"
+          },
+          {
+            "value": "body",
+            "label": "Body"
+          },
+          {
+            "value": "custom",
+            "label": "Friendly Schoolmates"
+          },
+          {
+            "value": "custom-new",
+            "label": "Times Sans Serif"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "custom_font_sub",
+        "label": "Sub-Heading Font Family",
+        "default": "body",
+        "options": [
+          {
+            "value": "heading",
+            "label": "Heading"
+          },
+          {
+            "value": "body",
+            "label": "Body"
+          },
+          {
+            "value": "custom",
+            "label": "Friendly Schoolmates"
+          },
+          {
+            "value": "custom-new",
+            "label": "Times Sans Serif"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_desktop",
+        "label": "Desktop | Heading Font Size",
+        "default": 56,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_laptop",
+        "label": "Laptop | Heading Font Size",
+        "default": 48,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_mobile",
+        "label": "Mobile | Heading Font Size",
+        "default": 40,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "subheading_font_size_desktop",
+        "label": "Desktop | Sub-Heading Font Size",
+        "default": 12,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "subheading_font_size_laptop",
+        "label": "Laptop | Sub-Heading Font Size",
+        "default": 12,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "subheading_font_size_mobile",
+        "label": "Mobile | Sub-Heading Font Size",
+        "default": 12,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      }
+    ], 
+    "blocks": [
+      {
+        "type": "img_block",
+        "name": "Feed",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Feed Link"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "External Feed",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,503 @@
+<div class="page-width">
+
+  {%- if section.settings.title_enable -%}
+    <header class="section-header">
+      <{{ section.settings.heading_type }} class="section-header__title cus_heading">{{ section.settings.top_subheading }}</{{ section.settings.heading_type }}>
+    </header>
+  {%- endif -%}
+
+  <div class="grid grid--uniform{% unless section.settings.enable_gutter %} grid--no-gutters{% endunless %}">
+    {%- liquid
+      assign isEmpty = true
+      if section.blocks.size > 0
+        assign isEmpty = false
+      endif
+    -%}
+
+    {%- style -%}
+      {%- if section.settings.custom_font == 'heading' -%}
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+        }
+      {%- elsif section.settings.custom_font == 'body' -%}
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+        }
+      {%- elsif section.settings.custom_font == 'custom' -%}
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-family: 'Friendly Schoolmates';
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-family: 'Friendly Schoolmates';
+        }
+      {%- elsif section.settings.custom_font == 'custom-new' -%}
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-family: 'Times Sans Serif';
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-family: 'Times Sans Serif';
+        }
+      {%- endif -%}
+
+      #shopify-section-{{ section.id }}.cus_collections .collection-item {
+        margin-bottom: 0;
+      }
+      #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+        color: {{ section.settings.button_text_color }} !important;
+        border-color: {{ section.settings.button_border_color }} !important;
+        background-color: {{ section.settings.button_bg_color }} !important;
+        box-shadow: none;
+        min-width: max-content;
+        text-transform: capitalize;
+        font-weight: 400;
+        padding: 10px 0px;
+        letter-spacing: 0;
+        background: linear-gradient(to right, currentColor, currentColor);
+        background-size: 0% 1px;
+        background-position: 50% 100%;
+        background-repeat: no-repeat;
+        transition: color .25s ease-in, background-size .25s ease-in;
+      }
+      #shopify-section-{{ section.id }}.cus_collections .cus_btn:hover {
+        color: {{ section.settings.button_text_color_hover }} !important;
+        background-color: {{ section.settings.button_bg_color_hover }} !important;
+        box-shadow: none;
+        transform: none;
+        background-size: 100% 1px;
+      }
+      #shopify-section-{{ section.id }}.cus_collections .cus_btn:hover:after {
+        content: "";
+        display: none !important;
+        border-bottom: 1px solid {{ section.settings.button_text_color_hover }} !important;
+        border-radius: 0;
+        top: 25px;
+        right: 2px;
+        left: auto;
+      }
+      @media screen and (max-width: 767px) {
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-size: {{ section.settings.heading_font_size_mobile }}px !important;
+          line-height: 23px;
+          letter-spacing: 0;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-size: {{ section.settings.button_font_size_mobile }}px !important;
+          line-height: 16.1px;
+          letter-spacing: 0;
+          min-width: auto;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .grid.grid--uniform {
+          margin-left: 0;
+          gap: 15px 20px;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          padding: 0 40px;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .section-header {
+          margin-bottom: 20px;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn:hover {
+          background: none !important;
+        }
+      }
+      /* @media only screen and (min-width: 768px) {
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-size: {{ section.settings.heading_font_size_laptop }}px !important;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-size: {{ section.settings.button_font_size_laptop }}px !important;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .grid__item {
+          padding-left: 0px;
+          max-width: 220px;
+        } 
+      } */
+      @media only screen and (min-width: 768px) {
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-size: {{ section.settings.heading_font_size_laptop }}px !important;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-size: {{ section.settings.button_font_size_laptop }}px !important;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .grid__item {
+          padding-left: 0;
+          max-width: 250px;
+        } 
+        {% if request.page_type == 'index' %}
+          #shopify-section-{{ section.id }}.cus_collections .grid.grid--uniform {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 40px;
+            margin-left: 0;
+            justify-content: center;
+          }
+          #shopify-section-{{ section.id }}.cus_collections .grid__item:nth-of-type(4n+1) {
+            /* margin-left: 40px; */
+          } 
+        {% else %}
+          #shopify-section-{{ section.id }}.cus_collections .grid.grid--uniform {
+            display: grid;
+            grid-template-columns: repeat({{section.settings.per_row}}, 220px);
+            padding: 0 30px;
+            align-items: center;
+            gap: 40px;
+            margin-left: 0;
+            justify-content: center;
+            justify-items: center;
+          }
+          #shopify-section-{{ section.id }}.cus_collections .grid__item {
+            width: 100%;
+          }
+        {% endif %}
+      }
+      @media only screen and (min-width: 1600px) {
+        #shopify-section-{{ section.id }} h2.cus_heading {
+          font-size: {{ section.settings.heading_font_size_desktop }}px !important;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .cus_btn {
+          font-size: {{ section.settings.button_font_size_desktop }}px !important;
+        }
+        #shopify-section-{{ section.id }}.cus_collections .grid__item {
+          padding-left: 0;
+          max-width: 320px;
+        } 
+        {% if request.page_type == 'index' %}
+          #shopify-section-{{ section.id }}.cus_collections .grid.grid--uniform {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 50px;
+            margin-left: 0;
+            justify-content: center;
+          }
+          #shopify-section-{{ section.id }}.cus_collections .grid__item:nth-of-type(4n+1) {
+            /* margin-left: 40px; */
+          } 
+        {% else %}
+          #shopify-section-{{ section.id }}.cus_collections .grid.grid--uniform {
+            display: grid;
+            grid-template-columns: repeat({{section.settings.per_row}}, 260px);
+            padding: 0 30px;
+            align-items: center;
+            gap: 40px;
+            margin-left: 0;
+            justify-content: center;
+            justify-items: center;
+          }
+          #shopify-section-{{ section.id }}.cus_collections .grid__item {
+            width: 100%;
+          }
+        {% endif %}
+      }
+    {%- endstyle -%}
+
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign collection = collections[block.settings.collection]
+        assign background_position = block.settings.focal_point
+
+        capture gridView
+          if section.blocks.size < section.settings.per_row
+            assign products_per_row = section.blocks.size
+          else
+            assign products_per_row = section.settings.per_row
+          endif
+          render 'products_per_row', products_per_row: products_per_row, style: 'fractions'
+        endcapture
+
+        case section.settings.per_row
+          when 2
+            assign grid_item_width = 'medium-up--one-half'
+          when 3
+            assign grid_item_width = 'small--one-half medium-up--one-third'
+          when 4
+            assign grid_item_width = 'small--one-half medium-up--one-quarter'
+          when 5
+            assign grid_item_width = 'small--one-half medium-up--one-fifth'
+        endcase
+      -%}
+
+      {%- render 'cus-collection-item',
+        collection: collection,
+        block: block,
+        grid_item_width: grid_item_width,
+        background_position: background_position,
+        per_row: section.settings.per_row,
+        sizeVariable: gridView,
+        fallback: 'variable'
+      -%}
+    {%- endfor -%}
+
+    {%- if isEmpty -%}
+      <div class="page-width">
+        <div class="grid">
+          <div class="grid__item">
+            <div class="rte">
+              {{ 'home_page.onboarding.no_content' | t }}
+            </div>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "Custom Collection List",
+  "class": "cus_collections",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "title_enable",
+      "label": "t:sections.list-collections-template.settings.title_enable.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "top_subheading",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_type",
+      "label": "Heading Type",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "per_row",
+      "label": "t:sections.featured-collections.settings.per_row.label",
+      "default": 4,
+      "min": 2,
+      "max": 5,
+      "step": 1
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gutter",
+      "label": "t:sections.featured-collections.settings.enable_gutter.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Heading Style"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_desktop",
+      "label": "Desktop | Heading Font Size",
+      "default": 36,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_laptop",
+      "label": "Laptop | Heading Font Size",
+      "default": 38,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Mobile | Heading Font Size",
+      "default": 30,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Button Style"
+    },
+    {
+      "type": "select",
+      "id": "custom_font",
+      "label": "Font Family",
+      "default": "body",
+      "options": [
+        {
+          "value": "heading",
+          "label": "Heading"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "custom",
+          "label": "Friendly Schoolmates"
+        },
+        {
+          "value": "custom-new",
+          "label": "Times Sans Serif"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_desktop",
+      "label": "Desktop | Button Font Size",
+      "default": 16,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_laptop",
+      "label": "Laptop | Button Font Size",
+      "default": 12,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "label": "Mobile | Button Font Size",
+      "default": 10,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#BE82DA"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color_hover",
+      "label": "Button Text Color Hover",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#BE82DA"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color_hover",
+      "label": "Button Background Color Hover",
+      "default": "#BE82DA"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "t:sections.featured-collections.blocks.collection.name",
+      "settings": [
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "t:sections.featured-collections.blocks.collection.settings.collection.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "col_img",
+          "label": "Collections Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.featured-collections.blocks.collection.settings.title.label", 
+          "info": "SHOP + "
+        },
+        {
+          "type": "select",
+          "id": "focal_point",
+          "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.label",
+          "info": "t:sections.featured-collections.blocks.collection.settings.focal_point.info",
+          "default": "center center",
+          "options": [
+            {
+              "value": "20% 0",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.20_0.label"
+            },
+            {
+              "value": "top center",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.top_center.label"
+            },
+            {
+              "value": "80% 0",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.80_0.label"
+            },
+            {
+              "value": "20% 50%",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.20_50.label"
+            },
+            {
+              "value": "center center",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.center_center.label"
+            },
+            {
+              "value": "80% 50%",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.80_50.label"
+            },
+            {
+              "value": "20% 100%",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.20_100.label"
+            },
+            {
+              "value": "bottom center",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.bottom_center.label"
+            },
+            {
+              "value": "80% 100%",
+              "label": "t:sections.featured-collections.blocks.collection.settings.focal_point.options.80_100.label"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Collection List",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

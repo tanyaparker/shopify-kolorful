@@ -1,0 +1,143 @@
+<style>
+  .template-index .rich-text__wrapper {
+    padding-bottom: 70px;
+  }
+
+  .rich-text__wrapper {
+    margin: 0 auto;
+    text-align: {{ section.settings.text_align }};
+    padding-bottom: 70px;
+  }
+  
+  .read-more-btn {
+    /* margin-top: 20px; */
+    padding: 0px 20px 0px 0px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 400;
+    font-family: 'Times Sans Serif';
+    font-size: 20px;
+    line-height: 23px;
+    letter-spacing: 0;
+    background: none;
+    border: none;
+    text-align: left;
+  }
+  
+  .hidden-content {
+    margin-top: 20px;
+  }
+
+  .rich-text__wrapper a {
+    text-decoration: underline;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .template-index .rich-text__wrapper {
+      padding-bottom: 30px;
+    }
+    
+    .rich-text__wrapper {
+      padding-bottom: 10px;
+    }
+  }
+  .metafield-rich_text_field h2 {
+    font-family: Times Sans Serif;
+    font-weight: 400 !important;
+    font-size: 36px;
+    line-height: 42px;
+    letter-spacing: 0px !important;
+    color: var(--colorTextBody);
+  }
+  .hidden-content, .metafield-rich_text_field p, .metafield-rich_text_field li, .metafield-rich_text_field a {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: 2px;
+    color: #656565;
+  }
+  .metafield-rich_text_field b, .metafield-rich_text_field strong {
+    font-weight: 900;
+    color: #54504A;
+  }
+</style>
+<div class="page-width">
+  <div class="rich-text__wrapper">
+    {%- assign split_content = section.settings.content | split: '[split]' -%}
+    
+    {%- if split_content.size > 1 -%}
+      <div class="rich-text__text">
+        {{ split_content.first }}
+        
+        <div class="hidden-content" style="display: none;">
+          {{ split_content.last }}
+        </div>
+        
+        <button class="read-more-btn" onclick="toggleContent(this)">Read More</button>
+      </div>
+    {%- else -%}
+      <div class="rich-text__text">
+        {{ section.settings.content }}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+function toggleContent(button) {
+  const hiddenContent = button.parentElement.querySelector('.hidden-content');
+  
+  if (hiddenContent) {
+    if (hiddenContent.style.display === 'none') {
+      hiddenContent.style.display = 'block';
+      button.textContent = 'Read Less';
+    } else {
+      hiddenContent.style.display = 'none';
+      button.textContent = 'Read More';
+    }
+  }
+}
+</script>
+
+{% schema %}
+{
+  "name": "Rich Text Split",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Text content",
+      "default": "<p>Add your content here</p>",
+      "info": "You need to use [split] for spliting content."
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich Text Split"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["custom.popups"]
+  }
+}
+{% endschema %}

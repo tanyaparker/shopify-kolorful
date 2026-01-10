@@ -1,0 +1,402 @@
+<div class="page-width">
+  {%- style -%}
+    {%- if section.settings.custom_font == 'heading' -%}
+      #shopify-section-{{ section.id }} h2.cus_heading {
+        font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+      }
+    {%- elsif section.settings.custom_font == 'body' -%}
+      #shopify-section-{{ section.id }} h2.cus_heading {
+        font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+      }
+    {%- elsif section.settings.custom_font == 'custom' -%}
+      #shopify-section-{{ section.id }} h2.cus_heading {
+        font-family: 'Friendly Schoolmates';
+      }
+    {%- elsif section.settings.custom_font == 'custom-new' -%}
+      #shopify-section-{{ section.id }} h2.cus_heading {
+        font-family: 'Times Sans Serif';
+      }
+    {%- endif -%}
+    {%- if section.settings.custom_font_content == 'heading' -%}
+      #shopify-section-{{ section.id }} .img_cta-content p {
+        font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+      }
+    {%- elsif section.settings.custom_font_content == 'body' -%}
+      #shopify-section-{{ section.id }} .img_cta-content p {
+        font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+      }
+    {%- elsif section.settings.custom_font_content == 'custom' -%}
+      #shopify-section-{{ section.id }} .img_cta-content p {
+        font-family: 'Friendly Schoolmates';
+      }
+    {%- elsif section.settings.custom_font_content == 'custom-new' -%}
+      #shopify-section-{{ section.id }} .img_cta-content p {
+        font-family: 'Times Sans Serif';
+      }
+    {%- endif -%}
+    {%- if section.settings.custom_font_button == 'heading' -%}
+      #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+        font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
+      }
+    {%- elsif section.settings.custom_font_button == 'body' -%}
+      #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+        font-family:var(--typeBasePrimary), var(--typeBaseFallback);
+      }
+    {%- elsif section.settings.custom_font_button == 'custom' -%}
+      #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+        font-family: 'Friendly Schoolmates';
+      }
+    {%- elsif section.settings.custom_font_button == 'custom-new' -%}
+      #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+        font-family: 'Times Sans Serif';
+      }
+    {%- endif -%}
+    @media screen and (max-width: 767px) {
+      #shopify-section-{{ section.id }} h2.cus_heading {
+        font-size: {{ section.settings.heading_font_size_mobile }}px !important;
+        line-height: 23px;
+      }
+      #shopify-section-{{ section.id }} .img_cta-content p {
+        font-size: {{ section.settings.content_font_size_mobile }}px !important;
+        line-height: unset;
+        letter-spacing: 2px;
+        color: #54504ACC !important;
+      }
+      #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+        font-size: {{ section.settings.button_font_size_mobile }}px !important;
+      }
+    }
+    @media only screen and (min-width: 768px) {
+      #shopify-section-{{ section.id }} h2.cus_heading {
+        font-size: {{ section.settings.heading_font_size_laptop }}px !important;
+      }
+      #shopify-section-{{ section.id }} .img_cta-content p {
+        font-size: {{ section.settings.content_font_size_laptop }}px !important;
+      }
+      #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+        font-size: {{ section.settings.button_font_size_laptop }}px !important;
+      }
+    }
+    @media only screen and (min-width: 1600px) {
+      #shopify-section-{{ section.id }} h2.cus_heading {
+        font-size: {{ section.settings.heading_font_size_desktop }}px !important;
+      }
+      #shopify-section-{{ section.id }} .img_cta-content p {
+        font-size: {{ section.settings.content_font_size_desktop }}px !important;
+      }
+      #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+        font-size: {{ section.settings.button_font_size_desktop }}px !important;
+      }
+    }
+    #shopify-section-{{ section.id }} .img_cta-content .cus_btn {
+      color: {{ section.settings.button_text_color }} !important;
+      border-color: {{ section.settings.button_border_color }} !important;
+      background-color: {{ section.settings.button_bg_color }} !important;
+    }
+    #shopify-section-{{ section.id }} .img_cta-content .cus_btn:hover {
+      color: {{ section.settings.button_text_color_hover }} !important;
+      background-color: {{ section.settings.button_bg_color_hover }} !important;
+    }
+    #shopify-section-{{ section.id }} .img_cta-content p {
+      color: #54504A99;
+      letter-spacing: unset;
+    }
+  {%- endstyle -%}
+  <div class="img_cta-wrap">
+    <div class="img_cta-img" data-aos>
+      <div class="img_cta-img_inner">
+        {%- if section.settings.image != blank -%}
+          <div class="{%- if section.settings.mob_image != blank -%}mob_hide{% endif %} image-wrap" style="height: 0; padding-bottom: {{ 100 | divided_by: section.settings.image.aspect_ratio }}%;">
+              {%- liquid
+                assign sizeVariable = 'calc(0.4 * 100vw)'
+                assign fallback = '40vw'
+                assign loading = true
+              -%}
+              {%- render 'image-element',
+                img: section.settings.image,
+                widths: '180, 360, 540, 750, 900, 1080',
+                loading: loading,
+                sizeVariable: sizeVariable,
+                fallback: fallback,
+                classes: 'feature-row__image',
+              -%}
+          </div>
+          {%- if section.settings.mob_image != blank -%}
+            <div class="image-wrap pc_hide" style="height: 0; padding-bottom: {{ 100 | divided_by: section.settings.mob_image.aspect_ratio }}%;">
+                {%- liquid
+                  assign sizeVariable = 'calc(0.4 * 100vw)'
+                  assign fallback = '100vw'
+                  assign loading = true
+                -%}
+                {%- render 'image-element',
+                  img: section.settings.mob_image,
+                  widths: '180, 360, 540, 750, 900, 1080',
+                  loading: loading,
+                  sizeVariable: sizeVariable,
+                  fallback: fallback,
+                  classes: 'feature-row__image',
+                -%}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="image-wrap">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="img_cta-content">
+      <h2 class="cus_heading">{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.text }}</p>
+      {% if section.settings.btn_link != blank %}
+        <a class="cus_btn" href="{{ section.settings.btn_link }}" title="">{{ section.settings.btn_text }}</a>
+      {% endif %}
+    </div>
+
+  </div>
+  
+</div>
+
+
+{% schema %}
+  {
+    "name": "Image CTA Section",
+    "class": "img_cta-section",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Desktop Image"
+      },
+      {
+        "type": "image_picker",
+        "id": "mob_image",
+        "label": "Mobile Image"
+      },
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading"
+      },
+      {
+        "type": "textarea",
+        "id": "text",
+        "label": "Text"
+      },
+      {
+        "type": "text",
+        "id": "btn_text",
+        "label": "Button Text",
+        "default": "OUR MISSION"
+      },
+      {
+        "type": "url",
+        "id": "btn_link",
+        "label": "Button Link"
+      },
+      {
+        "type": "header",
+        "content": "Style"
+      },
+      {
+        "type": "select",
+        "id": "custom_font",
+        "label": "Heading Font Family",
+        "default": "custom",
+        "options": [
+          {
+            "value": "heading",
+            "label": "Heading"
+          },
+          {
+            "value": "body",
+            "label": "Body"
+          },
+          {
+            "value": "custom",
+            "label": "Friendly Schoolmates"
+          },
+          {
+            "value": "custom-new",
+            "label": "Times Sans Serif"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "custom_font_content",
+        "label": "Text Font Family",
+        "default": "body",
+        "options": [
+          {
+            "value": "heading",
+            "label": "Heading"
+          },
+          {
+            "value": "body",
+            "label": "Body"
+          },
+          {
+            "value": "custom",
+            "label": "Friendly Schoolmates"
+          },
+          {
+            "value": "custom-new",
+            "label": "Times Sans Serif"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_desktop",
+        "label": "Desktop | Heading Font Size",
+        "default": 56,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_laptop",
+        "label": "Laptop | Heading Font Size",
+        "default": 48,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_mobile",
+        "label": "Mobile | Heading Font Size",
+        "default": 40,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "content_font_size_desktop",
+        "label": "Desktop | Text Font Size",
+        "default": 18,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "content_font_size_laptop",
+        "label": "Laptop | Text Font Size",
+        "default": 16,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "content_font_size_mobile",
+        "label": "Mobile | Text Font Size",
+        "default": 14,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "color",
+        "id": "button_text_color",
+        "label": "Button Text Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "button_text_color_hover",
+        "label": "Button Text Color Hover",
+        "default": "#BE82DA"
+      },
+      {
+        "type": "color",
+        "id": "button_border_color",
+        "label": "Button Border Color",
+        "default": "#BE82DA"
+      },
+      {
+        "type": "color",
+        "id": "button_bg_color",
+        "label": "Button Background Color",
+        "default": "#BE82DA"
+      },
+      {
+        "type": "color",
+        "id": "button_bg_color_hover",
+        "label": "Button Background Color Hover",
+        "default": "#ffffff"
+      },
+      {
+        "type": "select",
+        "id": "custom_font_button",
+        "label": "Button Font Family",
+        "default": "body",
+        "options": [
+          {
+            "value": "heading",
+            "label": "Heading"
+          },
+          {
+            "value": "body",
+            "label": "Body"
+          },
+          {
+            "value": "custom",
+            "label": "Friendly Schoolmates"
+          },
+          {
+            "value": "custom-new",
+            "label": "Times Sans Serif"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "button_font_size_desktop",
+        "label": "Desktop | Button Font Size",
+        "default": 16,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "button_font_size_laptop",
+        "label": "Laptop | Button Font Size",
+        "default": 15,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "button_font_size_mobile",
+        "label": "Mobile | Button Font Size",
+        "default": 15,
+        "min": 5,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Image CTA",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

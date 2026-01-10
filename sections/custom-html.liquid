@@ -1,0 +1,22 @@
+<div class="custom-html-section">
+  {{ section.settings.custom_content }}
+</div>
+{% schema %}
+{
+  "name": "Custom HTML Section",
+  "settings": [
+    {
+      "type": "html",
+      "id": "custom_content",
+      "label": "Custom HTML or Liquid Code",
+      "default": "<h2>Your Title Here</h2><p>Your content goes here. You can include HTML elements like <strong>bold text</strong> or <a href='#'>links</a>.</p>",
+      "info": "You can add HTML or Liquid code here. Basic HTML is supported."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom HTML Section"
+    }
+  ]
+}
+{% endschema %}

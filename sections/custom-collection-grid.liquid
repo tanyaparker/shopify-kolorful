@@ -1,0 +1,622 @@
+{% comment %}
+  Collection Grid Section
+{% endcomment %}
+{%- style -%}
+  {%- if section.settings.custom_font == 'heading' -%}
+    #shopify-section-{{ section.id }} .section-header__title {
+      font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
+    }
+    #shopify-section-{{ section.id }} .collection-grid__title {
+      font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
+    }
+    #shopify-section-{{ section.id }} .collection-grid__button {
+      font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
+    }
+  {%- elsif section.settings.custom_font == 'body' -%}
+    #shopify-section-{{ section.id }} .section-header__title {
+      font-family: var(--typeBasePrimary), var(--typeBaseFallback);
+    }
+    #shopify-section-{{ section.id }} .collection-grid__title {
+      font-family: var(--typeBasePrimary), var(--typeBaseFallback);
+    }
+    #shopify-section-{{ section.id }} .collection-grid__button {
+      font-family: var(--typeBasePrimary), var(--typeBaseFallback);
+    }
+  {%- elsif section.settings.custom_font == 'custom' -%}
+    #shopify-section-{{ section.id }} .section-header__title {
+      font-family: 'Friendly Schoolmates';
+    }
+    #shopify-section-{{ section.id }} .collection-grid__title {
+      font-family: 'Friendly Schoolmates';
+    }
+    #shopify-section-{{ section.id }} .collection-grid__button {
+      font-family: 'Friendly Schoolmates';
+    }
+  {%- elsif section.settings.custom_font == 'custom-new' -%}
+    #shopify-section-{{ section.id }} .section-header__title {
+      font-family: 'Times Sans Serif';
+    }
+    #shopify-section-{{ section.id }} .collection-grid__title {
+      font-family: 'Times Sans Serif';
+    }
+    #shopify-section-{{ section.id }} .collection-grid__button {
+      font-family: 'Times Sans Serif';
+    }
+  {%- endif -%}
+
+  @media screen and (max-width: 768px) {
+    #shopify-section-{{ section.id }} .section-header__title {
+      font-size: {{ section.settings.heading_font_size_mobile }}px;
+    }
+    #shopify-section-{{ section.id }} .collection-grid__title {
+      font-size: {{ section.settings.title_font_size_mobile }}px;
+    }
+    #shopify-section-{{ section.id }} .collection-grid__button {
+      font-size: {{ section.settings.button_font_size_mobile }}px;
+    }
+  }
+
+  @media only screen and (min-width: 768px) and (max-width: 1599px) {
+    #shopify-section-{{ section.id }} .section-header__title {
+      font-size: {{ section.settings.heading_font_size_laptop }}px;
+    }
+    #shopify-section-{{ section.id }} .collection-grid__title {
+      font-size: {{ section.settings.title_font_size_laptop }}px;
+    }
+    #shopify-section-{{ section.id }} .collection-grid__button {
+      font-size: {{ section.settings.button_font_size_laptop }}px;
+    }
+  }
+
+  @media only screen and (min-width: 1600px) {
+    #shopify-section-{{ section.id }} .collection-grid__title {
+      font-size: {{ section.settings.title_font_size_desktop }}px;
+    }
+    #shopify-section-{{ section.id }} .collection-grid__button {
+      font-size: {{ section.settings.button_font_size_desktop }}px;
+    }
+    #shopify-section-{{ section.id }} .section-header__title {
+      font-size: {{ section.settings.heading_font_size_desktop }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="collection-grid-section desktop-row-{{ section.settings.items_per_row_desktop }} mobile-row-{{ section.settings.items_per_row_mobile }}" 
+     id="CollectionGrid--{{ section.id }}"
+     data-section-id="{{ section.id }}"
+     data-section-type="collection-grid">
+  
+  {%- if section.settings.title_enable -%}
+    <header class="section-header">
+      <{{ section.settings.heading_type }} class="section-header__title cus_heading">{{ section.settings.top_subheading }}</{{ section.settings.heading_type }}>
+    </header>
+  {%- endif -%}
+
+  <div class="collection-grid">
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'collection' %}
+          {%- assign collection = collections[block.settings.collection] -%}
+          {%- assign collection_title = block.settings.custom_title | default: collection.title -%}
+          
+          <div class="collection-grid__item" {{ block.shopify_attributes }}>
+            <a href="{% if block.settings.custom_link != blank %}{{ block.settings.custom_link }}{% else %}{{ collection.url }}{% endif %}" 
+               class="collection-grid__link">
+              <div class="collection-grid__content">
+                <div class="collection-grid__text-wrapper text-{{ section.settings.text_alignment }}">
+                  <h3 class="collection-grid__title">
+                    {{ collection_title }}
+                  </h3>
+                  
+                  {% if block.settings.button_label != blank %}
+                    <div class="collection-grid__button">
+                      {{ block.settings.button_label }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              {% assign placeholder_image = 'https://cdn.shopify.com/s/files/1/0587/6396/8710/files/Gown.webp?v=1748265800' %}
+              {% assign bg_image = block.settings.background_image | image_url %}
+              {% if bg_image == blank %}
+                {% assign bg_image = placeholder_image %}
+              {% endif %}
+              <div class="collection-grid__background" style="background-image: url('{{ bg_image }}');"></div>
+            </a>
+          </div>
+      {% endcase %}
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Collection Grid",
+  "class": "page-width custom-collection-grid-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "title_enable",
+      "label": "Show heading",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "top_subheading",
+      "label": "Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "select",
+      "id": "heading_type",
+      "label": "Heading Type",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "custom_font",
+      "label": "Font Family",
+      "default": "heading",
+      "options": [
+        {
+          "value": "heading",
+          "label": "Heading"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "custom",
+          "label": "Friendly Schoolmates"
+        },
+        {
+          "value": "custom-new",
+          "label": "Times Sans Serif"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_desktop",
+      "label": "Desktop | Heading Font Size",
+      "default": 36,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_laptop",
+      "label": "Laptop | Heading Font Size",
+      "default": 32,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Mobile | Heading Font Size",
+      "default": 20,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Collection Grid Typography"
+    },
+    {
+      "type": "select",
+      "id": "title_font_family",
+      "label": "Title Font Family",
+      "default": "custom-new",
+      "options": [
+        {
+          "value": "heading",
+          "label": "Heading"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "custom",
+          "label": "Friendly Schoolmates"
+        },
+        {
+          "value": "custom-new",
+          "label": "Times Sans Serif"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_desktop",
+      "label": "Desktop | Title Font Size",
+      "default": 30,
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_laptop",
+      "label": "Laptop | Title Font Size",
+      "default": 28,
+      "min": 14,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_mobile",
+      "label": "Mobile | Title Font Size",
+      "default": 24,
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "button_font_family",
+      "label": "Button Font Family",
+      "default": "custom-new",
+      "options": [
+        {
+          "value": "heading",
+          "label": "Heading"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "custom",
+          "label": "Friendly Schoolmates"
+        },
+        {
+          "value": "custom-new",
+          "label": "Times Sans Serif"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_desktop",
+      "label": "Desktop | Button Font Size",
+      "default": 20,
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_laptop",
+      "label": "Laptop | Button Font Size",
+      "default": 18,
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "label": "Mobile | Button Font Size",
+      "default": 16,
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "items_per_row_desktop",
+      "label": "Items per row (Desktop)",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "items_per_row_mobile",
+      "label": "Items per row (Mobile)",
+      "default": 1,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image for Collection block",
+          "info": "If no image is selected, a default image will be displayed."
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title",
+          "info": "Overrides the collection's title"
+        },
+        {
+          "type": "url",
+          "id": "custom_link",
+          "label": "Custom Link",
+          "info": "Overrides the collection's URL"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Shop Now"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Collection Grid",
+      "category": "Custom",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+.collection-grid-section {
+  margin: 0 auto;
+  padding: 100px 0 0 0;
+}
+
+@media only screen and (max-width: 768px) {
+  .collection-grid-section {
+    padding: 40px 0 0 0;
+  }
+  .collection-grid-section .section-header {
+    margin-bottom: 20px;
+  }
+  .custom-collection-grid-wrapper.page-width {
+    padding: 0 15px 40px 15px;
+  }
+}
+
+.section-header {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.section-header__title {
+  margin-bottom: 0;
+  font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
+}
+
+.collection-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  /* padding: 0 30px; */
+  width: 100%;
+}
+
+.collection-grid__item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 320px;
+  flex: 0 0 calc(100% / {{ section.settings.items_per_row_desktop }} - (30px * ({{ section.settings.items_per_row_desktop }} - 1) / {{ section.settings.items_per_row_desktop }}));
+  max-width: calc(100% / {{ section.settings.items_per_row_desktop }} - (30px * ({{ section.settings.items_per_row_desktop }} - 1) / {{ section.settings.items_per_row_desktop }}));
+}
+
+.desktop-row-3 .collection-grid__item {
+  min-height: 240px;
+}  
+
+@media only screen and (max-width: 768px) {
+  .collection-grid {
+    gap: 20px;
+    padding: 0 15px;
+  }
+
+  .desktop-row-3 .collection-grid__item {
+    min-height: 175px;
+  }  
+  
+  .collection-grid__item {
+    min-height: 175px;
+    flex: 0 0 calc(100% / {{ section.settings.items_per_row_mobile }} - (20px * ({{ section.settings.items_per_row_mobile }} - 1) / {{ section.settings.items_per_row_mobile }}));
+    max-width: calc(100% / {{ section.settings.items_per_row_mobile }} - (20px * ({{ section.settings.items_per_row_mobile }} - 1) / {{ section.settings.items_per_row_mobile }}));
+  }
+}
+
+.collection-grid__link {
+  display: block;
+  position: relative;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.collection-grid__content {
+  position: absolute;
+  z-index: 2;
+  padding: 30px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.collection-grid__text-wrapper {
+  max-width: 100%;
+}
+
+.collection-grid__title {
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #54504A;
+}
+
+.collection-grid__button {
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 400;
+  color: #54504A;
+  position: relative;
+  background: linear-gradient(to right, currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 50% 100%;
+  background-repeat: no-repeat;
+  transition: color .25s ease-in, background-size .25s ease-in;
+}
+
+.collection-grid__item:hover .collection-grid__button {
+  background-size: 100% 2px;
+}
+
+.collection-grid__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 102%;
+  height: 100%;
+  background-size: 100% 100%;
+  background-position: center;
+  transition: transform 0.6s ease;
+  z-index: 0;
+}
+
+.collection-grid__item:hover .collection-grid__background {
+  transform: translateX(-2%);
+}
+
+@media only screen and (max-width: 480px) {
+  .collection-grid__content {
+    padding: 20px;
+  }
+  .collection-grid__background {
+    background-size: 100% 100%;
+  }
+}
+
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+  .collection-grid__item {
+    min-height: 320px;
+  }
+
+  .collection-grid__background {
+    background-size: 100%;
+  }
+  
+  .collection-grid__content {
+    padding: 20px;
+  }
+}
+  
+@media only screen and (max-width: 691px) and (orientation: landscape) {
+  .collection-grid__background {
+    background-size: 100%;
+  }
+
+  .collection-grid__item {
+    min-height: 240px;
+  }
+
+  .desktop-row-3 .collection-grid__item {
+    min-height: 240px;
+  }
+}  
+  
+@media only screen and (min-width: 690px) and (max-width: 990px) and (orientation: landscape) {
+  .collection-grid__background {
+    background-size: 100%;
+  }
+
+  .collection-grid__item {
+    min-height: 175px;
+  }
+
+  .desktop-row-3 .collection-grid__item {
+    min-height: 115px;
+  }
+}  
+
+@media only screen and (width: 1024px) {
+  .collection-grid__item {
+    min-height: 240px;
+  }
+}
+
+@media only screen and (min-width: 1600px) {
+  .collection-grid__item {
+    min-height: 420px;
+  }
+
+  .desktop-row-3 .collection-grid__item {
+    min-height: 320px;
+  }
+}  
+</style>

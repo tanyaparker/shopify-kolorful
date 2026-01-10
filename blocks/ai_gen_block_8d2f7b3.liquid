@@ -1,0 +1,664 @@
+{% doc %}
+  @prompt
+    Visually impactful section that scrolls through editorial style images. We will have 5 images with accompanying text
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-editorial-scroller-{{ ai_gen_id }} {
+    width: 100%;
+    overflow: hidden;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.section_padding }}px 0;
+  }
+
+  .ai-editorial-scroller__container-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.gap }}px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0 {{ block.settings.side_padding }}px;
+  }
+
+  .ai-editorial-scroller__container-{{ ai_gen_id }}::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ai-editorial-scroller__item-{{ ai_gen_id }} {
+    flex: 0 0 {{ block.settings.item_width }}%;
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ai-editorial-scroller__image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    aspect-ratio: {{ block.settings.image_aspect_width }} / {{ block.settings.image_aspect_height }};
+    overflow: hidden;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    background-color: #f4f4f4;
+  }
+
+  .ai-editorial-scroller__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ai-editorial-scroller__image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+  }
+
+  .ai-editorial-scroller__image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    max-height: 300px;
+  }
+
+  .ai-editorial-scroller__content-{{ ai_gen_id }} {
+    padding-top: {{ block.settings.text_spacing }}px;
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .ai-editorial-scroller__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 {{ block.settings.title_margin }}px 0;
+    line-height: 1.2;
+  }
+
+  .ai-editorial-scroller__text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .ai-editorial-scroller__navigation-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: {{ block.settings.nav_spacing }}px;
+  }
+
+  .ai-editorial-scroller__nav-button-{{ ai_gen_id }} {
+    background-color: {{ block.settings.nav_button_color }};
+    color: {{ block.settings.nav_button_icon_color }};
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .ai-editorial-scroller__nav-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.nav_button_hover_color }};
+  }
+
+  .ai-editorial-scroller__nav-button-{{ ai_gen_id }}:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .ai-editorial-scroller__dots-{{ ai_gen_id }} {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ai-editorial-scroller__dot-{{ ai_gen_id }} {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: {{ block.settings.dot_color }};
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+
+  .ai-editorial-scroller__dot-{{ ai_gen_id }}.active {
+    opacity: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-editorial-scroller__item-{{ ai_gen_id }} {
+      flex: 0 0 {{ block.settings.item_width_mobile }}%;
+    }
+
+    .ai-editorial-scroller__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.8 }}px;
+    }
+
+    .ai-editorial-scroller__text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<editorial-scroller-{{ ai_gen_id }}
+  class="ai-editorial-scroller-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-editorial-scroller__container-{{ ai_gen_id }}" data-scroller>
+    {% for i in (1..5) %}
+      {% liquid
+        assign image_key = 'image_' | append: i
+        assign title_key = 'title_' | append: i
+        assign text_key = 'text_' | append: i
+
+        assign image = block.settings[image_key]
+        assign title = block.settings[title_key]
+        assign text = block.settings[text_key]
+      %}
+
+      <div class="ai-editorial-scroller__item-{{ ai_gen_id }}" data-index="{{ forloop.index0 }}">
+        <div class="ai-editorial-scroller__image-wrapper-{{ ai_gen_id }}">
+          {% if image %}
+            <img
+              src="{{ image | image_url: width: 1200 }}"
+              alt="{{ image.alt | escape }}"
+              loading="lazy"
+              width="{{ image.width }}"
+              height="{{ image.height }}"
+              class="ai-editorial-scroller__image-{{ ai_gen_id }}"
+            >
+          {% else %}
+            <div class="ai-editorial-scroller__image-placeholder-{{ ai_gen_id }}">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if title != blank or text != blank %}
+          <div class="ai-editorial-scroller__content-{{ ai_gen_id }}">
+            {% if title != blank %}
+              <h3 class="ai-editorial-scroller__title-{{ ai_gen_id }}">{{ title }}</h3>
+            {% endif %}
+            {% if text != blank %}
+              <div class="ai-editorial-scroller__text-{{ ai_gen_id }}">{{ text }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if block.settings.show_navigation %}
+    <div class="ai-editorial-scroller__navigation-{{ ai_gen_id }}">
+      <button
+        class="ai-editorial-scroller__nav-button-{{ ai_gen_id }}"
+        data-prev
+        aria-label="Previous"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="ai-editorial-scroller__dots-{{ ai_gen_id }}">
+        {% for i in (1..5) %}
+          <button
+            class="ai-editorial-scroller__dot-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+            data-dot="{{ forloop.index0 }}"
+            aria-label="Go to slide {{ forloop.index }}"
+          ></button>
+        {% endfor %}
+      </div>
+
+      <button
+        class="ai-editorial-scroller__nav-button-{{ ai_gen_id }}"
+        data-next
+        aria-label="Next"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  {% endif %}
+</editorial-scroller-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class EditorialScroller{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.scroller = this.querySelector('[data-scroller]');
+        this.items = this.querySelectorAll('.ai-editorial-scroller__item-{{ ai_gen_id }}');
+        this.prevButton = this.querySelector('[data-prev]');
+        this.nextButton = this.querySelector('[data-next]');
+        this.dots = this.querySelectorAll('[data-dot]');
+        this.currentIndex = 0;
+      }
+
+      connectedCallback() {
+        this.setupEventListeners();
+        this.updateNavigation();
+      }
+
+      setupEventListeners() {
+        if (this.prevButton) {
+          this.prevButton.addEventListener('click', () => this.scrollToPrevious());
+        }
+
+        if (this.nextButton) {
+          this.nextButton.addEventListener('click', () => this.scrollToNext());
+        }
+
+        this.dots.forEach((dot) => {
+          dot.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.dot);
+            this.scrollToIndex(index);
+          });
+        });
+
+        this.scroller.addEventListener('scroll', () => {
+          this.handleScroll();
+        });
+      }
+
+      scrollToPrevious() {
+        if (this.currentIndex > 0) {
+          this.scrollToIndex(this.currentIndex - 1);
+        }
+      }
+
+      scrollToNext() {
+        if (this.currentIndex < this.items.length - 1) {
+          this.scrollToIndex(this.currentIndex + 1);
+        }
+      }
+
+      scrollToIndex(index) {
+        const item = this.items[index];
+        if (item) {
+          item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+          this.currentIndex = index;
+          this.updateNavigation();
+        }
+      }
+
+      handleScroll() {
+        const scrollLeft = this.scroller.scrollLeft;
+        const itemWidth = this.items[0].offsetWidth;
+        const gap = parseInt(getComputedStyle(this.scroller).gap) || 0;
+        const newIndex = Math.round(scrollLeft / (itemWidth + gap));
+
+        if (newIndex !== this.currentIndex) {
+          this.currentIndex = newIndex;
+          this.updateNavigation();
+        }
+      }
+
+      updateNavigation() {
+        if (this.prevButton) {
+          this.prevButton.disabled = this.currentIndex === 0;
+        }
+
+        if (this.nextButton) {
+          this.nextButton.disabled = this.currentIndex === this.items.length - 1;
+        }
+
+        this.dots.forEach((dot, index) => {
+          if (index === this.currentIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }
+    }
+
+    customElements.define('editorial-scroller-{{ ai_gen_id }}', EditorialScroller{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Editorial image scroller",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "item_width",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Item width",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "item_width_mobile",
+      "min": 70,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Item width on mobile",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap between items",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "side_padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Side padding",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "range",
+      "id": "image_aspect_width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Image aspect ratio width",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "image_aspect_height",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Image aspect ratio height",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "text_spacing",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Text spacing",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 14,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "title_margin",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Title margin",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#54504a"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#54504a"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "nav_spacing",
+      "min": 20,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Navigation spacing",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "nav_button_color",
+      "label": "Button color",
+      "default": "#ad8c7d"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_hover_color",
+      "label": "Button hover color",
+      "default": "#54504a"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_icon_color",
+      "label": "Button icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot color",
+      "default": "#54504a"
+    },
+    {
+      "type": "header",
+      "content": "Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_1",
+      "label": "Title",
+      "default": "Editorial Story 1"
+    },
+    {
+      "type": "textarea",
+      "id": "text_1",
+      "label": "Text",
+      "default": "Discover the artistry behind our latest collection"
+    },
+    {
+      "type": "header",
+      "content": "Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_2",
+      "label": "Title",
+      "default": "Editorial Story 2"
+    },
+    {
+      "type": "textarea",
+      "id": "text_2",
+      "label": "Text",
+      "default": "Crafted with precision and passion"
+    },
+    {
+      "type": "header",
+      "content": "Image 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_3",
+      "label": "Title",
+      "default": "Editorial Story 3"
+    },
+    {
+      "type": "textarea",
+      "id": "text_3",
+      "label": "Text",
+      "default": "Where tradition meets innovation"
+    },
+    {
+      "type": "header",
+      "content": "Image 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_4",
+      "label": "Title",
+      "default": "Editorial Story 4"
+    },
+    {
+      "type": "textarea",
+      "id": "text_4",
+      "label": "Text",
+      "default": "Timeless designs for modern living"
+    },
+    {
+      "type": "header",
+      "content": "Image 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_5",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_5",
+      "label": "Title",
+      "default": "Editorial Story 5"
+    },
+    {
+      "type": "textarea",
+      "id": "text_5",
+      "label": "Text",
+      "default": "Experience the difference in every detail"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial image scroller"
+    }
+  ]
+}
+{% endschema %}

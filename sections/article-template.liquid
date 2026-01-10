@@ -1,0 +1,831 @@
+{%- liquid
+  assign number_of_comments = article.comments_count
+  if comment.status == 'pending'
+    assign number_of_comments = article.comments_count | plus: 1
+  endif
+-%}
+
+<div class="article-container page-width page-width--narrow page-content">
+  <article class="article-header">
+    <h1 class="article-title">{{ article.title }}</h1>
+    
+    <div class="article-meta">
+      <time class="blog-card__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        <img class="icon" src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/calendar.webp?v=1740635475">
+        {{ article.published_at | date: '%B %Y' }}
+      </time>
+      
+      <div class="article-social">
+        <button class="social-button" id="share-twitter">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/twitter-x-default.webp?v=1745758520" alt="Twitter" class="social-icon">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/twitter-x-hover.webp?v=1745758520" alt="Twitter" class="social-icon on-hover">
+        </button>
+        <button class="social-button" id="share-pinterest">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/pinterest.webp?v=1740631224" alt="Pinterest" class="social-icon">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/PinterestOnHover.webp?v=1742907965" alt="Pinterest" class="social-icon on-hover">
+        </button>
+        <button class="social-button" id="share-facebook">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/facebook.webp?v=1740631224" alt="Facebook" class="social-icon">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/FacebookOnHover.webp?v=1742907964" alt="Facebook" class="social-icon on-hover">
+        </button>
+        <button class="social-button" id="share-linkedin">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/linkdin.webp?v=1740631224" alt="LinkedIn" class="social-icon">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/LinkedInOnHover.webp?v=1742907964" alt="LinkedIn" class="social-icon on-hover">
+        </button>
+      </div>
+    </div>
+    
+    {%- if article.tags.size > 0 -%}
+      <div class="article-tags">
+        {%- for tag in article.tags -%}
+          {% if tag contains "_" %}{%- assign tag_starts_with = tag | slice: 0 -%}{% if tag_starts_with == "_" %}{% continue %}{% endif %}{% endif %}
+          <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="article-tag">{{ tag }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {% comment %}
+    <div class="article-intro">
+      {%- if article.excerpt != blank -%}
+        {{ article.excerpt }}
+      {%- else -%}
+        {%- assign content_parts = article.content | split: '</p>' -%}
+        {%- if content_parts.size > 0 -%}
+          {{ content_parts.first | append: '</p>' | strip_html | truncatewords: 40 }}
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+    {% endcomment %}
+  </article>
+
+  {% comment %}
+  {%- if article.image -%}
+    <div class="article-featured-image">
+      {%- render 'image-element',
+        img: article.image,
+        classes: 'article-image',
+        alt: article.title
+      -%}
+    </div>
+  {%- endif -%}
+  {% endcomment %}
+
+  <div class="article-content">
+    <div class="article-body rte">
+      {{ article.content | replace: '<img', '<img loading="lazy"' | replace: '<iframe', '<iframe loading="lazy"' | replace: '<video', '<video preload="none"' }}
+    </div>
+
+    {% comment %}
+    <div class="article-share">
+      <div class="share-buttons">
+        <button class="share-button" id="share-facebook-bottom">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/facebook.webp?v=1740631224" alt="Facebook" class="share-icon">
+          <span>Share</span>
+        </button>
+        <button class="share-button" id="share-twitter-bottom">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/twitter.webp?v=1740631224" alt="Twitter" class="share-icon">
+          <span>Tweet</span>
+        </button>
+        <button class="share-button" id="share-linkedin-bottom">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/linkdin.webp?v=1740631224" alt="LinkedIn" class="share-icon">
+          <span>Share</span>
+        </button>
+        <button class="share-button" id="share-pinterest-bottom">
+          <img src="https://cdn.shopify.com/s/files/1/0587/6396/8710/files/pinterest.webp?v=1740631224" alt="Pinterest" class="share-icon">
+          <span>Pin</span>
+        </button>
+      </div>
+    </div>
+    {% endcomment %}
+  </div>
+
+  {%- if blog.comments_enabled? and section.settings.blog_show_comments -%}
+    <div class="article-comments" id="comments">
+      <h3 class="comments-title">{{ 'blogs.comments.title' | t }}</h3>
+
+      {%- if number_of_comments > 0 -%}
+        <div class="comments-count">{{ 'blogs.comments.with_count' | t: count: number_of_comments }}</div>
+        
+        {%- paginate article.comments by 5 -%}
+          <div class="comments-list">
+            {%- if comment and comment.errors == blank -%}
+              <div class="comment-success">
+                {%- if blog.moderated? -%}
+                  {{ 'blogs.comments.success_moderated' | t }}
+                {%- else -%}
+                  {{ 'blogs.comments.success' | t }}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {%- if number_of_comments > 0 -%}
+              <ul class="comments-items">
+                {%- if comment.status == 'pending' -%}
+                  <li id="Comment-{{ comment.id }}" class="comment-item">
+                    {%- render 'comment', comment: comment -%}
+                  </li>
+                {%- endif -%}
+
+                {%- for comment in article.comments -%}
+                  <li id="Comment-{{ comment.id }}" class="comment-item">
+                    {%- render 'comment', comment: comment -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+
+              {%- if paginate.pages > 1 -%}
+                {%- render 'pagination', paginate: paginate, hash: '#comments' -%}
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+        {%- endpaginate -%}
+      {%- endif -%}
+
+      <div class="comment-form">
+        {%- form 'new_comment', article -%}
+          {{ form.errors | default_errors }}
+
+          <div class="form-fields">
+            <div class="form-field">
+              <label for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
+              <input required type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" autocapitalize="words" class="input-field{% if form.errors contains 'author' %} input-error{% endif %}">
+            </div>
+            
+            <div class="form-field">
+              <label for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
+              <input required type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" autocorrect="off" autocapitalize="off" class="input-field{% if form.errors contains 'email' %} input-error{% endif %}">
+            </div>
+            
+            <div class="form-field full-width">
+              <label for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
+              <textarea required name="comment[body]" id="CommentBody" class="input-field{% if form.errors contains 'body' %} input-error{% endif %}">{{ form.body }}</textarea>
+            </div>
+          </div>
+
+          {%- if blog.moderated? -%}
+            <div class="comment-note">{{ 'blogs.comments.moderated' | t }}</div>
+          {%- endif -%}
+
+          <button type="submit" class="button button-primary">
+            {{ 'blogs.comments.post' | t }}
+          </button>
+
+          {{ 'shopify.online_store.spam_detection.disclaimer_html' | t }}
+        {%- endform -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="article-navigation">
+    <a href="{{ blog.url }}" class="back-to-blog">
+      <span>Back</span>
+    </a>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "articleBody": {{ article.content | strip_html | json }},
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": {{ shop.url | append: article.url | json }}
+  },
+  "headline": {{ article.title | json }},
+  {% if article.excerpt != blank %}
+    "description": {{ article.excerpt | strip_html | json }},
+  {% endif %}
+  {% if article.image %}
+    {% assign image_size = article.image.width | append: 'x' %}
+    "image": [
+      {{ article | img_url: image_size | prepend: "https:" | json }}
+    ],
+  {% endif %}
+  "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+  "dateModified": {{ article.updated_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+  "dateCreated": {{ article.created_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+  "author": {
+    "@type": "Person",
+    "name": {{ article.author | json }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    {% if page_image %}
+      {% assign image_size = page_image.width | append: 'x' %}
+      "logo": {
+        "@type": "ImageObject",
+        "height": {{ page_image.height | json }},
+        "url": {{ page_image | img_url: image_size | prepend: "https:" | json }},
+        "width": {{ page_image.width | json }}
+      },
+    {% endif %}
+    "name": {{ shop.name | json }}
+  }
+}
+</script>
+
+<style>
+  .social-button:hover .social-icon:not(.on-hover) {
+    display:none;
+  }
+  .social-button:hover .social-icon.on-hover {
+    display:block;
+  }
+  .social-icon.on-hover {
+    display:none;
+  }
+  .article-container {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .article-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .article-title {
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-weight: 400;
+    color: #54504A;
+    letter-spacing: 0;
+    text-align: left;
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .article-meta .blog-card__date {
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 2px;
+    font-weight: 500;
+  }
+
+  .article-meta .blog-card__date img.icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .article-date {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .article-social {
+    display: flex;
+    /* gap: 12px; */
+  }
+
+  .social-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .social-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+  }
+
+  .article-featured-image {
+    margin-bottom: 20px;
+    border-radius: 0;
+  }
+
+  .social-button:hover .social-icon {
+    opacity: 1;
+  }
+
+  .article-body {
+    font-size: 14px;
+    line-height: 16.8px;
+  }
+
+  .article-body h2, .article-body h3 {
+    font-size: 18px;
+    line-height: 20.7px;
+  }
+
+  .article-navigation {
+    padding: 16px 23px;
+    border-radius: 6px;
+  }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-direction: row;
+  }
+
+  .article-tag {
+    display: inline-block;
+    padding: 6px 16px;
+    background-color: #FFFFFF;
+    border: 1px solid #54504A4D;
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: 1px;
+    color: #54504A;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .article-tag:hover {
+    background-color: #e5e5e5;
+    color: #333;
+  }
+
+  .article-intro {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 30px;
+  }
+
+  .article-featured-image {
+    margin-bottom: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .article-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .article-content {
+    margin-bottom: 40px;
+  }
+
+  .article-body {
+    letter-spacing: 2px;
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 500;
+    color: #54504A99;
+  }
+
+  .article-body h2 {
+    font-size: 22px;
+    line-height: 28px;
+    letter-spacing: 0;
+    margin-top: 26px;
+    margin-bottom: 10px;
+    color: #54504A;
+    font-weight: 400;
+    font-family: 'Times Sans Serif';
+  }
+
+  .article-body h3 {
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0;
+    margin-top: 26px;
+    margin-bottom: 10px;
+    color: #54504A;
+    font-weight: 400;
+    font-family: 'Times Sans Serif';
+  }
+
+  .article-body b, .article-body strong {
+    color: #54504A;
+  }
+
+  .article-body p {
+    margin-bottom: 20px;
+    color: #656565;
+  }
+
+  .article-body ul, .article-body li {
+    color: #656565;
+  }
+
+  .article-body img {
+    max-width: 100%;
+    height: auto;
+    margin: 30px 0;
+    border-radius: 8px;
+  }
+
+  .article-share {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 16px;
+  }
+
+  .share-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .share-button:hover {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .share-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .article-comments {
+    margin-top: 60px;
+    border-top: 1px solid #eee;
+    padding-top: 40px;
+  }
+
+  .comments-title {
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 500;
+  }
+
+  .comments-count {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  .comments-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .comment-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .comment-success {
+    background-color: #f0f9eb;
+    color: #67c23a;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+
+  .comment-form {
+    margin-top: 40px;
+  }
+
+  .form-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-field.full-width {
+    grid-column: span 2;
+  }
+
+  .form-field label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .input-field {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  textarea.input-field {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .input-error {
+    border-color: #f56c6c;
+  }
+
+  .comment-note {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  .button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .button-primary {
+    background-color: #333;
+    color: white;
+  }
+
+  .button-primary:hover {
+    background-color: #555;
+  }
+
+  .article-navigation {
+    display: flex;
+    justify-content: center;
+    border: 1.5px solid #AD8C7D;
+    padding: 16px 36px;
+    border-radius: 10px;
+    width: max-content;
+  }
+
+  .back-to-blog {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #AD8C7D;
+    text-decoration: none;
+    font-size: 16px;
+    line-height: 19.2px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .article-navigation:hover {
+    background-color: #AD8C7D;
+    cursor: pointer;
+  }
+  
+  .article-navigation:hover a.back-to-blog {
+    color: #FFFFFF;
+  }
+
+  @media (max-width: 768px) {
+    .article-title {
+      font-size: 20px;
+      line-height: 23px;
+    }
+
+    .article-meta {
+      flex-direction: row;
+    }
+
+    .article-intro {
+      font-size: 16px;
+    }
+
+    .form-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .form-field.full-width {
+      grid-column: span 1;
+    }
+    .article-container {
+      max-width: 100%;
+      padding: 0 15px;
+    }
+    .article-meta .blog-card__date {
+      font-size: 10px;
+      line-height: 18.34px;
+    }
+    .article-meta .blog-card__date img.icon {
+      width: 16.68px;
+      height: 16.68px;
+    }
+    .social-icon {
+      width: 26px;
+      height: 26px;
+    }
+    .article-navigation {
+      padding: 16px 23px;
+      border-radius: 6px;
+      margin: unset;
+      margin-bottom: 40px;
+    }
+  
+    .back-to-blog {
+      font-size: 12px;
+      line-height: 14.4px;
+    }
+  
+    .article-content {
+      margin-bottom: 20px;
+    }
+
+    .article-body {
+      font-size: 14px;
+      line-height: 16.8px;
+    }
+  
+    .article-body h2 {
+      font-size: 18px;
+      line-height: 20.7px;
+    }
+
+    .article-body h3 {
+      font-size: 16px;
+      line-height: 18.7px;
+    }
+  
+    .article-navigation {
+      padding: 16px 23px;
+      border-radius: 6px;
+    }
+
+    .article-tags {
+      justify-content: flex-start;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .article-tag {
+      padding: 3px 3px;
+      font-size: 9px;
+      line-height: 11px;
+      flex: 0 1 30%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      /* min-height: 55px; */
+    }
+  }
+  @media screen and (min-width: 769px) and (max-width: 1599px) {
+    .article-title {
+      font-size: 32px;
+    }
+    .article-meta .blog-card__date {
+      font-size: 18px;
+      line-height: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .article-meta .blog-card__date img.icon {
+      width: 22px;
+      height: 22px;
+    }
+    .social-icon {
+      width: 30px;
+      height: 30px;
+    }
+    .article-body {
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .back-to-blog {
+      font-size: 14px;
+      line-height: 17px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Social sharing functionality for top icons
+    const socialButtons = document.querySelectorAll('.social-button');
+    socialButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const platform = this.id.split('-')[1];
+        shareContent(platform);
+      });
+    });
+    
+    // Social sharing functionality for bottom buttons
+    const shareFacebookBottom = document.getElementById('share-facebook-bottom');
+    const shareTwitterBottom = document.getElementById('share-twitter-bottom');
+    const shareLinkedinBottom = document.getElementById('share-linkedin-bottom');
+    const sharePinterestBottom = document.getElementById('share-pinterest-bottom');
+    
+    if (shareFacebookBottom) {
+      shareFacebookBottom.addEventListener('click', function() {
+        shareContent('facebook');
+      });
+    }
+    
+    if (shareTwitterBottom) {
+      shareTwitterBottom.addEventListener('click', function() {
+        shareContent('twitter');
+      });
+    }
+    
+    if (shareLinkedinBottom) {
+      shareLinkedinBottom.addEventListener('click', function() {
+        shareContent('linkedin');
+      });
+    }
+    
+    if (sharePinterestBottom) {
+      sharePinterestBottom.addEventListener('click', function() {
+        shareContent('pinterest');
+      });
+    }
+    
+    function shareContent(platform) {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(document.title);
+      let shareUrl = '';
+      
+      switch(platform) {
+        case 'facebook':
+          shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+          break;
+        case 'twitter':
+          shareUrl = 'https://twitter.com/intent/tweet?text=' + title + '&url=' + url;
+          break;
+        case 'linkedin':
+          shareUrl = 'https://www.linkedin.com/shareArticle?mini=true&url=' + url + '&title=' + title;
+          break;
+        case 'pinterest':
+          const img = document.querySelector('.article-image');
+          const imgUrl = img ? encodeURIComponent(img.src) : '';
+          shareUrl = 'https://pinterest.com/pin/create/button/?url=' + url + '&media=' + imgUrl + '&description=' + title;
+          break;
+      }
+      
+      if (shareUrl) {
+        window.open(shareUrl, 'share-dialog', 'width=626,height=436');
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.article-template.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "blog_show_tags",
+      "label": "t:sections.article-template.settings.blog_show_tags.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_date",
+      "label": "t:sections.article-template.settings.blog_show_date.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_comments",
+      "label": "t:sections.article-template.settings.blog_show_comments.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_author",
+      "label": "t:sections.article-template.settings.blog_show_author.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "social_sharing_blog",
+      "label": "t:sections.article-template.settings.social_sharing_blog.label",
+      "default": true
+    }
+  ],
+  "disabled_on": {
+    "groups": ["footer", "header", "custom.popups"]
+  }
+}
+{% endschema %}

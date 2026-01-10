@@ -1,0 +1,309 @@
+<style>
+  .template-blog .grid--uniform {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .template-blog .grid__item {
+    order: 2;
+  }
+  .template-blog .grid__item.featured-article {
+    order: 1;
+  }
+  #LoadMorePagination {
+    text-align: center;
+    margin: 40px 0;
+  }
+  #LoadMorePagination a {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #ad8c7d;
+    color: #fff;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  #LoadMorePagination a:hover {
+    background: #333;
+  }
+  #LoadMorePagination.loading a {
+    background: #666;
+    cursor: not-allowed;
+  }
+  #LoadMorePagination.loading::after {
+    content: 'Loading...';
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #000;
+  }
+  .grid__item.hidden {
+    display: none; /* Hide articles beyond initial 21 */
+  }
+  @media (max-width: 767px) {
+    #LoadMorePagination a {
+      padding: 10px 18px;
+      font-size: 12px;
+    }
+  }
+</style>
+
+{%- paginate blog.articles by 999 -%}
+
+<div data-section-id="{{ section.id }}" data-section-type="blog">
+  <div class="page-width page-content">
+
+    {%- render 'breadcrumbs' -%}
+
+    <header class="section-header{% if section.settings.blog_show_tag_filter and blog.tags.size > 0 %}{% unless settings.type_headers_align_text %} section-header--with-link{% endunless %}{% endif %}">
+      <h1 class="section-header__title">
+        {{ blog.title }}
+
+        {%- if section.settings.blog_show_rss -%}
+          <a href="{{ shop.url }}{{ blog.url }}.atom" class="rss-link">
+            <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-rss" viewBox="0 0 20 20"><path fill="#444" d="M5.903 16.586a2.489 2.489 0 1 1-4.977 0 2.489 2.489 0 0 1 4.977 0zm7.053 2.489H9.43c0-4.688-3.817-8.505-8.505-8.505V7.044c6.638 0 12.031 5.393 12.031 12.031z"/><path fill="#444" d="M15.445 19.075c0-8.028-6.493-14.52-14.52-14.52V.925c10.019 0 18.15 8.131 18.15 18.15h-3.63z"/></svg>
+            <span class="icon__fallback-text">RSS</span>
+          </a>
+        {%- endif -%}
+      </h1>
+
+      {%- if section.settings.blog_show_tag_filter and blog.tags.size > 0 -%}
+        <select id="BlogTagFilter">
+          <option value="/blogs/{{ blog.handle }}">All</option>
+          {%- for tag in blog.all_tags -%}
+            {% if tag contains "_" %}{%- assign tag_starts_with = tag | slice: 0 -%}{% if tag_starts_with == "_" %}{% if tag_count %}{%- assign tag_count = tag_count | minus: 1 | at_least: 0 -%}{% endif %}{% continue %}{% endif %}{% endif %}
+            <option value="/blogs/{{ blog.handle }}/tagged/{{ tag | handleize }}" {% if current_tags contains tag %}selected{% endif %}>{{ tag }}</option>
+          {%- endfor -%}
+        </select>
+      {%- endif -%}
+    </header>
+
+    <div class="grid grid--uniform" id="BlogPostLoop">
+      {% assign article_count = 0 %}
+      {% assign featured_ids = '' %}
+      {% assign rendered_ids = '' %}
+
+      <!-- Collect featured article IDs -->
+      {% for article in blog.articles %}
+        {% if article.tags contains 'Featured' or article.tags contains 'featured' %}
+          {% assign featured_ids = featured_ids | append: article.id | append: ',' %}
+        {% endif %}
+      {% endfor %}
+
+      <!-- Render featured articles first -->
+      {% for article in blog.articles %}
+        {% if article.tags contains 'Featured' or article.tags contains 'featured' %}
+          {% unless rendered_ids contains article.id %}
+            {% assign article_count = article_count | plus: 1 %}
+            {%- assign is_featured = true -%}
+            {%- render 'article-grid-item',
+              article: article,
+              grid_item_width: 'medium-up--one-third',
+              per_row: '3',
+              image_size: section.settings.blog_image_size,
+              is_featured: is_featured
+            -%}
+            {% assign rendered_ids = rendered_ids | append: article.id | append: ',' %}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+
+      <!-- Render non-featured articles -->
+      {% for article in blog.articles %}
+        {% unless article.tags contains 'Featured' or article.tags contains 'featured' %}
+          {% unless rendered_ids contains article.id %}
+            {% assign article_count = article_count | plus: 1 %}
+            {%- assign is_featured = false -%}
+            {%- render 'article-grid-item',
+              article: article,
+              grid_item_width: 'medium-up--one-third',
+              per_row: '3',
+              image_size: section.settings.blog_image_size,
+              is_featured: is_featured
+            -%}
+            {% assign rendered_ids = rendered_ids | append: article.id | append: ',' %}
+          {% endunless %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+
+    <div id="LoadMorePagination">
+      {% if article_count > 21 %}
+        <a href="#" class="load-more">Load More</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const perPage = 21;
+    let currentPage = 0;
+
+    function updatePostVisibility() {
+      const allItems = document.querySelectorAll('#BlogPostLoop .grid__item');
+      const start = currentPage * perPage;
+      const end = start + perPage;
+      let hasMore = false;
+
+      allItems.forEach((item, index) => {
+        if (index < end) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+          hasMore = true;
+        }
+      });
+
+      const pagination = document.querySelector('#LoadMorePagination');
+      if (!hasMore) {
+        pagination.innerHTML = '';
+      } else {
+        pagination.innerHTML = '<a href="#" class="load-more">Load More</a>';
+      }
+
+      // Reinitialize AOS for newly visible articles
+      if (window.AOS) {
+        AOS.refreshHard();
+      }
+      console.log('Displayed articles:', start, 'to', end, 'Has more:', hasMore);
+    }
+
+    // Initial visibility: Show first 21 posts
+    updatePostVisibility();
+
+    // Intersection Observer for Load More
+    const pagination = document.querySelector('#LoadMorePagination');
+    if (pagination) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !pagination.classList.contains('loading')) {
+            pagination.classList.add('loading');
+            setTimeout(() => {
+              currentPage++;
+              updatePostVisibility();
+              pagination.classList.remove('loading');
+            }, 500); // Adjust delay for loading effect
+          }
+        });
+      }, {
+        rootMargin: '200px', // Trigger 200px before visible
+        threshold: 0.1
+      });
+
+      observer.observe(pagination);
+    }
+
+    // Handle Load More button click
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('load-more')) {
+        event.preventDefault();
+        const pagination = document.querySelector('#LoadMorePagination');
+        if (!pagination.classList.contains('loading')) {
+          pagination.classList.add('loading');
+          setTimeout(() => {
+            currentPage++;
+            updatePostVisibility();
+            pagination.classList.remove('loading');
+          }, 500); // Adjust delay for loading effect
+        }
+      }
+    });
+
+    // Reinitialize tag filter to reset on tag change
+    const tagFilter = document.getElementById('BlogTagFilter');
+    if (tagFilter) {
+      tagFilter.addEventListener('change', function() {
+        window.location = this.value; // Reload to reset pagination
+      });
+    }
+
+    // Debug: Log total and unique posts
+    const items = document.querySelectorAll('#BlogPostLoop .grid__item');
+    const urls = Array.from(items).map(item => item.querySelector('a').href);
+    const uniqueUrls = new Set(urls);
+    console.log('Total items:', items.length, 'Unique URLs:', uniqueUrls.size);
+  });
+</script>
+
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "t:sections.blog-template.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "blog_show_tag_filter",
+      "label": "t:sections.blog-template.settings.blog_show_tag_filter.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_rss",
+      "label": "t:sections.blog-template.settings.blog_show_rss.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_tags",
+      "label": "t:sections.blog-template.settings.blog_show_tags.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_date",
+      "label": "t:sections.blog-template.settings.blog_show_date.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_comments",
+      "label": "t:sections.blog-template.settings.blog_show_comments.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_author",
+      "label": "t:sections.blog-template.settings.blog_show_author.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_excerpt",
+      "label": "t:sections.blog-template.settings.blog_show_excerpt.label"
+    },
+    {
+      "type": "select",
+      "id": "blog_image_size",
+      "label": "t:sections.blog-template.settings.blog_image_size.label",
+      "default": "wide",
+      "options": [
+        {
+          "value": "natural",
+          "label": "t:sections.blog-template.settings.blog_image_size.options.natural.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.blog-template.settings.blog_image_size.options.square.label"
+        },
+        {
+          "value": "landscape",
+          "label": "t:sections.blog-template.settings.blog_image_size.options.landscape.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.blog-template.settings.blog_image_size.options.portrait.label"
+        },
+        {
+          "value": "wide",
+          "label": "t:sections.blog-template.settings.blog_image_size.options.wide.label"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["footer", "header", "custom.popups"]
+  }
+}
+{% endschema %}
