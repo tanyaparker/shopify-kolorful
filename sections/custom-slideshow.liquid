@@ -50,6 +50,7 @@
       {%- assign homepage_banner_customization = true -%}    
       {%- if homepage_banner_customization -%}
          {%- style -%}
+              /* font-size: section.settings */
               {%- if section.settings.custom_font == 'heading' -%}
                 #shopify-section-{{ section.id }} .hero__title.cus_heading {
                   font-family:var(--typeHeaderPrimary), var(--typeHeaderFallback);
@@ -60,13 +61,44 @@
                 }
               {%- elsif section.settings.custom_font == 'custom' -%}
                 #shopify-section-{{ section.id }} .hero__title.cus_heading {
-                  font-family: 'Friendly Schoolmates';
+                  font-family: 'Avenir Regular';
                 }
               {%- elsif section.settings.custom_font == 'custom-new' -%}
                 #shopify-section-{{ section.id }} .hero__title.cus_heading {
-                  font-family: 'Times Sans Serif';
+                  font-family: 'Antipasto Regular';
+                }
+              {%- elsif section.settings.custom_font == 'custom-new1' -%}
+                #shopify-section-{{ section.id }} .hero__title.cus_heading {
+                  font-family: 'Shantine';
                 }
               {%- endif -%}
+
+{%- liquid
+  assign subheading_font_css = ''
+
+  case section.settings.custom_font_subheading
+    when 'heading'
+      assign subheading_font_css = 'var(--typeHeaderPrimary), var(--typeHeaderFallback)'
+    when 'body'
+      assign subheading_font_css = 'var(--typeBasePrimary), var(--typeBaseFallback)'
+    when 'custom'
+      assign subheading_font_css = '"Avenir Regular"'
+    when 'custom-new'
+      assign subheading_font_css = '"Antipasto Regular"'
+    when 'custom-new1'
+      assign subheading_font_css = '"Shantine"'
+    else
+      assign subheading_font_css = ''
+  endcase
+-%}
+
+{%- if subheading_font_css != blank -%}
+  #shopify-section-{{ section.id }} .hero__top-subtitle .animation-contents {
+    font-family: {{ subheading_font_css }};
+  }
+{%- endif -%}
+
+
               #shopify-section-{{ section.id }} .hero__link .btn.cus_btn {
                 color: {{ section.settings.button_text_color }} !important;
                 border-color: {{ section.settings.button_border_color }} !important;
@@ -78,7 +110,8 @@
                 background-color: {{ section.settings.button_bg_color_hover }} !important;
                 border-color: {{ section.settings.button_bg_color_hover }} !important;
               }
-              .hero__subtitle .animation-contents {
+
+              .hero__subtitle .animation-cropper .animation-contents {
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: flex-start;
@@ -89,7 +122,7 @@
                 padding-left: {{ section.settings.slider_text_icon_gap }}px;
                 margin-top: 4px;
                 margin-bottom: 4px;
-                font-family: 'Urbanist';
+                font-family: 'Avenir Regular';
               }
               .hero__subtitle .animation-cropper .animation-contents span::before {
                   content: '';
@@ -461,11 +494,43 @@ if (subRight == true ) {
         },
         {
           "value": "custom",
-          "label": "Friendly Schoolmates"
+          "label": "Avenir Regular"
         },
         {
           "value": "custom-new",
-          "label": "Times Sans Serif"
+          "label": "Antipasto Regular"
+        },
+        {
+          "value": "custom-new1",
+          "label": "Shantine"
+        }
+      ]
+    },
+        {
+      "type": "select",
+      "id": "custom_font_subheading",
+      "label": "Subheading Font Family",
+      "default": "custom",
+      "options": [
+        {
+          "value": "heading",
+          "label": "Heading"
+        },
+        {
+          "value": "body",
+          "label": "Body"
+        },
+         {
+          "value": "custom",
+          "label": "Avenir Regular"
+        },
+        {
+          "value": "custom-new",
+          "label": "Antipasto Regular"
+        },
+        {
+          "value": "custom-new1",
+          "label": "Shantine"
         }
       ]
     },

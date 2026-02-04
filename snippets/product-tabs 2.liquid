@@ -1,0 +1,95 @@
+{%- if description != blank or shipping_title != blank or care_title != blank -%}
+  <div class="product-tabs" data-tabs>
+    <div class="product-tabs__nav" role="tablist">
+      {%- if description != blank -%}
+        <button type="button" 
+          class="product-tabs__nav-btn is-active"
+          role="tab"
+          aria-selected="true"
+          aria-controls="tab-description"
+          id="tab-button-description">
+          Description
+        </button>
+      {%- endif -%}
+      
+      {%- if shipping_title != blank and shipping_content != blank -%}
+        <button type="button" 
+          class="product-tabs__nav-btn"
+          role="tab"
+          aria-selected="false"
+          aria-controls="tab-shipping"
+          id="tab-button-shipping">
+          {{ shipping_title }}
+        </button>
+      {%- endif -%}
+
+      {%- if care_title != blank and care_content != blank -%}
+        <button type="button" 
+          class="product-tabs__nav-btn"
+          role="tab"
+          aria-selected="false"
+          aria-controls="tab-care"
+          id="tab-button-care">
+          {{ care_title }}
+        </button>
+      {%- endif -%}
+    </div>
+
+    <div class="product-tabs__content-wrapper">
+      {%- if description != blank -%}
+        <div id="tab-description"
+          class="product-tabs__content is-active"
+          role="tabpanel"
+          aria-labelledby="tab-button-description">
+          <div class="rte description-content">
+            <div class="description-preview">
+              {%- assign words = description | split: ' ' -%}
+              {%- for word in words limit: 30 -%}
+                {{ word }} 
+              {%- endfor -%}
+              {%- if words.size > 30 -%}
+                <span class="more-text">... <button type="button" class="read-more-btn">more</button></span>
+              {%- endif -%}
+            </div>
+
+            {%- if words.size > 30 -%}
+              <div class="description-full" style="display: none;">
+                {{ description }}
+                <button type="button" class="read-less-btn">less</button>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if shipping_title != blank and shipping_content != blank -%}
+        <div id="tab-shipping"
+          class="product-tabs__content"
+          role="tabpanel"
+          aria-labelledby="tab-button-shipping">
+          <div class="rte shipping-content">
+            <div class="shipping-preview" data-content-preview>
+              <div class="preview-content"></div>
+              <span class="more-text" style="display: none">... <button type="button" class="read-more-btn">more</button></span>
+            </div>
+            <div class="shipping-full" style="display: none;" data-content-full>
+              {{ shipping_content }}
+              <button type="button" class="read-less-btn">less</button>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if care_title != blank and care_content != blank -%}
+        <div id="tab-care"
+          class="product-tabs__content"
+          role="tabpanel"
+          aria-labelledby="tab-button-care">
+          <div class="rte care-content">
+            {{ care_content }}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

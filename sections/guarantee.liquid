@@ -20,11 +20,11 @@
         }
       {%- elsif section.settings.custom_font == 'custom' -%}
         #shopify-section-{{ section.id }} .guarantee_block h4 {
-          font-family: 'Friendly Schoolmates';
+          font-family: 'Avenir Regular';
         }
       {%- elsif section.settings.custom_font == 'custom-new' -%}
         #shopify-section-{{ section.id }} .guarantee_block h4 {
-          font-family: 'Times Sans Serif';
+          font-family: 'Antipasto Regular';
         }
       {%- endif -%}
       {%- if section.settings.custom_font_content == 'heading' -%}
@@ -37,7 +37,7 @@
         }
       {%- elsif section.settings.custom_font_content == 'custom' -%}
         #shopify-section-{{ section.id }} .guarantee_block p {
-          font-family: 'Friendly Schoolmates';
+          font-family: 'Avenir Regular';
         }
       {%- endif -%}
       @media screen and (max-width: 767px) {
@@ -98,7 +98,7 @@
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
-    background-color: #FDF9F2;
+    background-color: #F3F0EC;
     /* background-image: url({{ section.settings.pc_back | img_url: 'master' }}); */
   }
 
@@ -106,7 +106,7 @@
     @media screen and (max-width: 767px) {
       .guarantee-section_inner .page-width {
         /* background-image: url({{ section.settings.mob_back | img_url: 'master' }}); */
-        background-color: #FDF9F2;
+        background-color: #F3F0EC;
         margin-top: 100px;
         padding: 0;
       }
@@ -141,11 +141,11 @@
           },
           {
             "value": "custom",
-            "label": "Friendly Schoolmates"
+            "label": "Avenir Regular"
           },
           {
             "value": "custom-new",
-            "label": "Times Sans Serif"
+            "label": "Antipasto Regular"
           }
         ]
       },
@@ -165,11 +165,11 @@
           },
           {
             "value": "custom",
-            "label": "Friendly Schoolmates"
+            "label": "Avenir Regular"
           },
           {
             "value": "custom-new",
-            "label": "Times Sans Serif"
+            "label": "Antipasto Regular"
           }
         ]
       },

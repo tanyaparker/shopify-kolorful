@@ -1,0 +1,28 @@
+{%- capture seo_title -%}
+  {{ page_title }}
+  {%- if current_tags -%}
+    {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+  {%- endif -%}
+  {%- if current_page != 1 -%}
+    &ndash; {{ 'general.meta.page' | t: page: current_page }}
+  {%- endif -%}
+  {%- if template == 'password' -%}
+    {{ shop.name }}
+  {%- else -%}
+    {%- unless page_title contains shop.name or request.page_type == 'article' -%}
+      &ndash; {{ shop.name }}
+    {%- endunless -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if request.page_type == 'policy' and page_title == 'Terms of service' -%}
+  <title>Kolorful Terms of Service: Policies on Sustainable Baby Clothes</title>
+{%- elsif request.page_type == 'policy' and page_title == 'Refund policy' -%}
+  <title>Kolorful Refund Policy: Returns & Exchanges for Baby Clothes</title>
+{%- elsif request.page_type == 'policy' and page_title == 'Shipping policy' -%}
+  <title>Kolorful Shipping Policy: Delivery Times & Rates for Baby Clothes</title>
+{%- elsif request.page_type == 'policy' and page_title == 'Privacy policy' -%}
+  <title>Kolorful Privacy Policy: Protecting Your Information & Privacy</title>
+{%- else -%}
+  <title>{{ seo_title }}</title>
+{%- endif -%}

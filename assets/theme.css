@@ -6,41 +6,41 @@
 */
 
 :root{
-  --colorAnnouncement:#6b7469;
+  --colorAnnouncement:#3f454b;
   --colorAnnouncementText:#ffffff;
 
-  --colorBody:#ffffff;
-  --colorBodyAlpha05:rgba(255, 255, 255, 0.05);
-  --colorBodyDim:#f2f2f2;
-  --colorBodyLightDim:#fafafa;
-  --colorBodyMediumDim:#f5f5f5;
+  --colorBody:{{ shop.brand.colors.primary[0].foreground }};
+  --colorBodyAlpha05:;
+  --colorBodyDim:;
+  --colorBodyLightDim:;
+  --colorBodyMediumDim:;
 
 
-  --colorBorder:#e8e8e1;
+  --colorBorder:#e4dcd6;
 
-  --colorBtnPrimary:#ad8c7d;
-  --colorBtnPrimaryLight:#c1a89c;
-  --colorBtnPrimaryDim:#a37e6d;
+  --colorBtnPrimary:#3f454b;
+  --colorBtnPrimaryLight:#565f67;
+  --colorBtnPrimaryDim:#33383d;
   --colorBtnPrimaryText:#ffffff;
 
   --colorCartDot:#ad8c7d;
 
   --colorDrawers:#ffffff;
   --colorDrawersDim:#f2f2f2;
-  --colorDrawerBorder:#e8e8e1;
-  --colorDrawerText:#54504a;
-  --colorDrawerTextDark:#2b2926;
+  --colorDrawerBorder:#e4dcd6;
+  --colorDrawerText:#434136;
+  --colorDrawerTextDark:#191814;
   --colorDrawerButton:#ad8c7d;
   --colorDrawerButtonText:#ffffff;
 
-  --colorFooter:#d2c7b8;
-  --colorFooterText:#54504a;
-  --colorFooterTextAlpha01:#54504a;
+  --colorFooter:#e4dcd6;
+  --colorFooterText:#434136;
+  --colorFooterTextAlpha01:#434136;
 
   --colorGridOverlay:#000000;
   --colorGridOverlayOpacity:0.1;
 
-  --colorHeaderTextAlpha01:rgba(84, 80, 74, 0.1);
+  --colorHeaderTextAlpha01:rgba(67, 65, 54, 0.1);
 
   --colorHeroText:#ffffff;
 
@@ -51,27 +51,27 @@
   --colorImageOverlayOpacity:0.0;
   --colorImageOverlayTextShadow:0.2;
 
-  --colorLink:#54504a;
+  --colorLink:#434136;
 
   --colorModalBg:rgba(230, 230, 230, 0.6);
 
   --colorNav:#ffffff;
-  --colorNavText:#54504a;
+  --colorNavText:#434136;
 
   --colorPrice:#1c1d1d;
 
-  --colorSaleTag:#dddcdb;
-  --colorSaleTagText:#54504a;
+  --colorSaleTag:#ad8c7d;
+  --colorSaleTagText:#ffffff;
 
-  --colorTextBody:#54504a;
-  --colorTextBodyAlpha015:rgba(84, 80, 74, 0.15);
-  --colorTextBodyAlpha005:rgba(84, 80, 74, 0.05);
-  --colorTextBodyAlpha008:rgba(84, 80, 74, 0.08);
+  --colorTextBody:#434136;
+  --colorTextBodyAlpha015:rgba(67, 65, 54, 0.15);
+  --colorTextBodyAlpha005:rgba(67, 65, 54, 0.05);
+  --colorTextBodyAlpha008:rgba(67, 65, 54, 0.08);
   --colorTextSavings:#C20000;
 
-  --urlIcoSelect:url(//kolorful.com/cdn/shop/t/41/assets/ico-select.svg);
-  --urlIcoSelectFooter:url(//kolorful.com/cdn/shop/t/41/assets/ico-select-footer.svg);
-  --urlIcoSelectWhite:url(//kolorful.com/cdn/shop/t/41/assets/ico-select-white.svg);
+  --urlIcoSelect:url(//kolorful.com/cdn/shop/t/42/assets/ico-select.svg);
+  --urlIcoSelectFooter:url(//kolorful.com/cdn/shop/t/42/assets/ico-select-footer.svg);
+  --urlIcoSelectWhite:url(//kolorful.com/cdn/shop/t/42/assets/ico-select-white.svg);
 
   --grid-gutter:17px;
   --drawer-gutter:20px;
@@ -80,9 +80,9 @@
   --sizeChartIconMargin:5px;
 
   --newsletterReminderPadding:40px;
-  --color-body-text:#54504a;
-  --color-body:#ffffff;
-  --color-bg:#ffffff;
+  --color-body-text:#434136;
+  --color-body:{{ shop.brand.colors.primary[0].foreground }};
+  --color-bg:{{ shop.brand.colors.primary[0].foreground }};
 }
 
 @media only screen and (min-width:769px){

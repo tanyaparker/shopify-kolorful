@@ -1,0 +1,98 @@
+<style>
+.product-shipping-section {
+  padding: 20px 0;
+}
+
+.info-grid {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.info-content {
+  flex: 1;
+}
+
+.info-content h3 {
+  font-family: var(--typeBasePrimary), var(--typeBaseFallback);
+  line-height: 19.2px;
+}
+
+@media screen and (max-width: 749px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+</style>
+
+<div class="product-block">
+  <div class="info-grid">
+    <div class="info-item">
+      {% if block.settings.shipping_icon %}
+        <img 
+          src="{{ block.settings.shipping_icon | img_url: '60x' }}" 
+          alt="{{ block.settings.shipping_heading }}"
+          class="info-icon"
+          width="30"
+          height="30"
+          loading="lazy"
+        >
+      {% endif %}
+      <div class="info-content">
+        <h3 style="
+          font-size: {{ block.settings.heading_size_desktop }}px;
+          color: {{ block.settings.heading_color_desktop }};
+          margin: 0;
+          @media screen and (max-width: 749px) {
+            font-size: {{ block.settings.heading_size_mobile }}px;
+            color: {{ block.settings.heading_color_mobile }};
+          }
+        ">
+          {{ block.settings.shipping_heading }}
+        </h3>
+      </div>
+    </div>
+
+    <div class="info-item">
+      {% if block.settings.returns_icon %}
+        <img 
+          src="{{ block.settings.returns_icon | img_url: '60x' }}" 
+          alt="{{ block.settings.returns_heading }}"
+          class="info-icon"
+          width="30"
+          height="30"
+          loading="lazy"
+        >
+      {% endif %}
+      <div class="info-content">
+        <h3 style="
+          font-size: {{ block.settings.heading_size_desktop }}px;
+          color: {{ block.settings.heading_color_desktop }};
+          margin: 0;
+          @media screen and (max-width: 749px) {
+            font-size: {{ block.settings.heading_size_mobile }}px;
+            color: {{ block.settings.heading_color_mobile }};
+          }
+        ">
+          {{ block.settings.returns_heading }}
+        </h3>
+      </div>
+    </div>
+  </div>
+</div>

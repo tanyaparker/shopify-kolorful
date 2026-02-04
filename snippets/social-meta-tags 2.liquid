@@ -1,0 +1,57 @@
+{%- liquid
+  assign og_title = page_title
+  assign og_url = canonical_url
+  assign og_type = 'website'
+  assign og_description = page_description | default: shop.description | default: shop.name
+-%}
+
+{%- if request.page_type == 'product' -%}
+  {%- assign og_title = product.title | strip_html -%}
+  {%- assign og_type = 'product' -%}
+{%- elsif request.page_type == 'search' -%}
+  {%- assign og_title = "Search - Kolorful" -%}
+  {%- assign og_description = "Explore Kolorful for eco-friendly, gender-neutral baby clothes made from organic fabrics in vibrant styles." -%}
+{%- elsif request.page_type == 'policy' and page_title == 'Terms of service' -%}
+  {%- assign og_title = "Kolorful Terms of Service: Policies on Sustainable Baby Clothes" -%}
+  {%- assign og_description = "Read Kolorful's Terms of Service for information on our policies, product use, and customer rights regarding our sustainable, gender-neutral baby clothing." -%}
+{%- elsif request.page_type == 'policy' and page_title == 'Refund policy' -%}
+  {%- assign og_title = "Kolorful Refund Policy: Returns & Exchanges for Baby Clothes" -%}
+  {%- assign og_description = "Read Kolorful's refund policy for details on returns, exchanges, and customer satisfaction for our gender-neutral baby clothes." -%}
+{%- elsif request.page_type == 'policy' and page_title == 'Shipping policy' -%}
+  {%- assign og_title = "Kolorful Shipping Policy: Delivery Times & Rates for Baby Clothes" -%}
+  {%- assign og_description = "Read Kolorful's shipping policy for details on delivery times, shipping rates, and services for our gender-neutral baby clothes." -%}
+{%- elsif request.page_type == 'policy' and page_title == 'Privacy policy' -%}
+  {%- assign og_title = "Kolorful Privacy Policy: Protecting Your Information & Privacy" -%}
+  {%- assign og_description = "Read Kolorful's privacy policy to understand how we protect your personal information and ensure your privacy when shopping for gender-neutral baby clothes." -%}
+{%- elsif request.page_type == 'article' -%}
+  {%- assign og_title = article.title | strip_html -%}
+  {%- assign og_type = 'article' -%}
+  {%- assign og_description = page_description | strip_html -%}
+  <meta name="description" content="{{ page_description | strip_html }}">
+{%- elsif request.page_type == 'password' -%}
+  {%- liquid
+    assign og_title = shop.name
+    assign og_url = shop.url
+    assign og_description = shop.description | default: shop.name
+  -%}
+{%- endif -%}
+
+  <meta property="og:site_name" content="{{ shop.name }}">
+  <meta property="og:url" content="{{ og_url }}">
+  <meta property="og:title" content="{{ og_title | escape }}">
+  <meta property="og:type" content="{{ og_type }}">
+  <meta property="og:description" content="{{ og_description | strip_html }}">
+  {%- if template_base == 'product' -%}
+    <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
+    <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- endif -%}
+  {%- if page_image -%}
+    <meta property="og:image" content="http:{{ page_image | img_url: 'master' }}">
+    <meta property="og:image:secure_url" content="https:{{ page_image | img_url: 'master' }}">
+    <meta property="og:image:width" content="{{ page_image.width }}">
+    <meta property="og:image:height" content="{{ page_image.height }}">
+  {%- endif -%}
+  <meta name="twitter:site" content="{{ settings.social_twitter_link | split: 'twitter.com/' | last | prepend: '@' }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ og_title }}">
+  <meta name="twitter:description" content="{{ og_description | strip_html }}">

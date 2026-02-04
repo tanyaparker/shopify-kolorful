@@ -214,6 +214,7 @@
   },
   {
     "name": "t:settings_schema.typography.name",
+    
     "settings": [
       {
         "type": "header",
@@ -225,6 +226,7 @@
         "label": "t:settings_schema.typography.settings.type_header_font_family.label",
         "default": "poppins_n7"
       },
+
       {
         "type": "select",
         "id": "type_header_spacing",

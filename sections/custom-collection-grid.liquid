@@ -2,47 +2,79 @@
   Collection Grid Section
 {% endcomment %}
 {%- style -%}
-  {%- if section.settings.custom_font == 'heading' -%}
-    #shopify-section-{{ section.id }} .section-header__title {
-      font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
-    }
-    #shopify-section-{{ section.id }} .collection-grid__title {
-      font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
-    }
-    #shopify-section-{{ section.id }} .collection-grid__button {
-      font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
-    }
-  {%- elsif section.settings.custom_font == 'body' -%}
-    #shopify-section-{{ section.id }} .section-header__title {
-      font-family: var(--typeBasePrimary), var(--typeBaseFallback);
-    }
-    #shopify-section-{{ section.id }} .collection-grid__title {
-      font-family: var(--typeBasePrimary), var(--typeBaseFallback);
-    }
-    #shopify-section-{{ section.id }} .collection-grid__button {
-      font-family: var(--typeBasePrimary), var(--typeBaseFallback);
-    }
-  {%- elsif section.settings.custom_font == 'custom' -%}
-    #shopify-section-{{ section.id }} .section-header__title {
-      font-family: 'Friendly Schoolmates';
-    }
-    #shopify-section-{{ section.id }} .collection-grid__title {
-      font-family: 'Friendly Schoolmates';
-    }
-    #shopify-section-{{ section.id }} .collection-grid__button {
-      font-family: 'Friendly Schoolmates';
-    }
-  {%- elsif section.settings.custom_font == 'custom-new' -%}
-    #shopify-section-{{ section.id }} .section-header__title {
-      font-family: 'Times Sans Serif';
-    }
-    #shopify-section-{{ section.id }} .collection-grid__title {
-      font-family: 'Times Sans Serif';
-    }
-    #shopify-section-{{ section.id }} .collection-grid__button {
-      font-family: 'Times Sans Serif';
-    }
-  {%- endif -%}
+
+{%- liquid
+  assign font_all = ''
+  assign font_title = ''
+  assign font_button = ''
+
+  # --- Font Family (general) ---
+  case section.settings.custom_font
+    when 'heading'
+      assign font_all = 'var(--typeHeaderPrimary), var(--typeHeaderFallback)'
+    when 'body'
+      assign font_all = 'var(--typeBasePrimary), var(--typeBaseFallback)'
+    when 'custom'
+      assign font_all = '"Avenir Regular"'
+    when 'custom-new'
+      assign font_all = '"Antipasto Regular"'
+    when 'custom-new1'
+      assign font_all = '"Shantine"'
+  endcase
+
+  # --- Title Font Family ---
+  case section.settings.title_font_family
+    when 'heading'
+      assign font_title = 'var(--typeHeaderPrimary), var(--typeHeaderFallback)'
+    when 'body'
+      assign font_title = 'var(--typeBasePrimary), var(--typeBaseFallback)'
+    when 'custom'
+      assign font_title = '"Avenir Regular"'
+    when 'custom-new'
+      assign font_title = '"Antipasto Regular"'
+    when 'custom-new1'
+      assign font_title = '"Shantine"'
+  endcase
+
+  # --- Button Font Family ---
+  case section.settings.button_font_family
+    when 'heading'
+      assign font_button = 'var(--typeHeaderPrimary), var(--typeHeaderFallback)'
+    when 'body'
+      assign font_button = 'var(--typeBasePrimary), var(--typeBaseFallback)'
+    when 'custom'
+      assign font_button = '"Avenir Regular"'
+    when 'custom-new'
+      assign font_button = '"Antipasto Regular"'
+    when 'custom-new1'
+      assign font_button = '"Shantine"'
+  endcase
+-%}
+
+{%- if font_all != blank -%}
+  /* Font Family */
+  #shopify-section-{{ section.id }} {
+    font-family: {{ font_all }};
+  }
+{%- endif -%}
+
+{%- if font_title != blank -%}
+  /* Title Font Family */
+  #shopify-section-{{ section.id }} .section-header__title,
+  #shopify-section-{{ section.id }} .collection-grid__title {
+    font-family: {{ font_title }};
+  }
+{%- endif -%}
+
+{%- if font_button != blank -%}
+  /* Button Font Family */
+  #shopify-section-{{ section.id }} .collection-grid__button {
+    font-family: {{ font_button }};
+  }
+{%- endif -%}
+
+
+
 
   @media screen and (max-width: 768px) {
     #shopify-section-{{ section.id }} .section-header__title {
@@ -57,6 +89,11 @@
   }
 
   @media only screen and (min-width: 768px) and (max-width: 1599px) {
+    .hero__top-subtitle {
+      font-size: {{ section.settings.slider_subheading_font_size }}px;
+      line-height: {{ section.settings.slider_subheading_line_height }}px;
+    }
+    
     #shopify-section-{{ section.id }} .section-header__title {
       font-size: {{ section.settings.heading_font_size_laptop }}px;
     }
@@ -177,13 +214,37 @@
         },
         {
           "value": "custom",
-          "label": "Friendly Schoolmates"
+          "label": "Avenir Regular"
+        },
+         {
+          "value": "custom-new",
+          "label": "Antipasto Regular"
         },
         {
-          "value": "custom-new",
-          "label": "Times Sans Serif"
+          "value": "custom-new1",
+          "label": "Shantine"
         }
       ]
+    },
+    {
+      "type": "range",
+      "id": "slider_subheading_font_size",
+      "label": "Subheading Font Size",
+      "default": 20,
+      "min": 12,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "slider_subheading_line_height",
+      "label": "Subheading Line Height",
+      "default": 20,
+      "min": 12,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
     },
     {
       "type": "range",
@@ -243,7 +304,7 @@
       "type": "select",
       "id": "title_font_family",
       "label": "Title Font Family",
-      "default": "custom-new",
+      "default": "custom",
       "options": [
         {
           "value": "heading",
@@ -253,13 +314,17 @@
           "value": "body",
           "label": "Body"
         },
-        {
+       {
           "value": "custom",
-          "label": "Friendly Schoolmates"
+          "label": "Avenir Regular"
         },
         {
           "value": "custom-new",
-          "label": "Times Sans Serif"
+          "label": "Antipasto Regular"
+        },
+        {
+          "value": "custom-new1",
+          "label": "Shantine"
         }
       ]
     },
@@ -309,11 +374,15 @@
         },
         {
           "value": "custom",
-          "label": "Friendly Schoolmates"
+          "label": "Avenir Regular"
         },
         {
           "value": "custom-new",
-          "label": "Times Sans Serif"
+          "label": "Antipasto Regular"
+        },
+        {
+          "value": "custom-new1",
+          "label": "Shantine"
         }
       ]
     },

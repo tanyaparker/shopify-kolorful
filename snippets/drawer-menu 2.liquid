@@ -1,0 +1,262 @@
+{%- assign animation_row = 1 -%}
+{%- assign drawer_position = 'left' -%}
+{% if logo_alignment == 'center' %}
+  {%- assign drawer_position = 'left' -%}
+{% endif %}
+
+<div id="NavDrawer" class="drawer drawer--{{ drawer_position }}">
+  <div class="drawer__contents">
+    <div class="drawer__fixed-header">
+      <div class="drawer__header appear-animation appear-delay-{{ animation_row }}">
+        <div class="h2 drawer__title"></div>
+        <div class="drawer__close">
+          <button type="button" class="drawer__close-button js-drawer-close">
+            <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-close" viewBox="0 0 64 64"><title>icon-X</title><path d="m19 17.61 27.12 27.13m0-27.12L19 44.74"/></svg>
+            <span class="icon__fallback-text">{{ 'general.drawers.close_menu' | t }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="drawer__scrollable">
+      <ul class="mobile-nav{% if settings.type_navigation_style == 'heading' %} mobile-nav--heading-style{% endif %}" role="navigation" aria-label="Primary">
+        {%- for link in main_menu.links -%}
+          {%- assign animation_row = animation_row | plus: 1 -%}
+          {%- assign child_list_handle = link.url | handleize | append: forloop.index -%}
+          {%- assign has_dropdown = false -%}
+          {%- if link.links != blank -%}
+            {%- assign has_dropdown = true -%}
+          {%- endif -%}
+
+          <li class="mobile-nav__item appear-animation appear-delay-{{ animation_row }}">
+            {%- if has_dropdown -%}
+              <div class="mobile-nav__has-sublist">
+                {%- if link.url == '#' -%}
+                  <button type="button"
+                    aria-controls="Linklist-{{ child_list_handle }}"{% if link.active or link.child_active %} aria-open="true"{% endif %}
+                    class="mobile-nav__link--button mobile-nav__link--top-level collapsible-trigger collapsible--auto-height{% if link.active or link.child_active %} is-open{% endif %}">
+                    <span class="mobile-nav__faux-link"{% if link.active %} data-active="true"{% endif %}>
+                      {{ link.title }}
+                    </span>
+                    <div class="mobile-nav__toggle">
+                      <span class="faux-button">
+                        {%- render 'collapsible-icons' -%}
+                      </span>
+                    </div>
+                  </button>
+                {%- else -%}
+                  <a href="{{ link.url }}"
+                    class="mobile-nav__link mobile-nav__link--top-level"
+                    id="Label-{{ child_list_handle }}"
+                    {% if link.active %}data-active="true"{% endif %}>
+                    {{ link.title }}
+                  </a>
+                  <div class="mobile-nav__toggle">
+                    <button type="button"
+                      aria-controls="Linklist-{{ child_list_handle }}"{% if link.active or link.child_active %} aria-open="true"{% endif %}
+                      aria-labelledby="Label-{{ child_list_handle }}"
+                      class="collapsible-trigger collapsible--auto-height{% if link.active or link.child_active %} is-open{% endif %}">
+                      {%- render 'collapsible-icons' -%}
+                    </button>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- else -%}
+              <a href="{{ link.url }}" class="mobile-nav__link mobile-nav__link--top-level"{% if link.active %} data-active="true"{% endif %}>{{ link.title }}</a>
+            {%- endif -%}
+
+            {%- if has_dropdown -%}
+              <div id="Linklist-{{ child_list_handle }}"
+                class="mobile-nav__sublist collapsible-content collapsible-content--all{% if link.active or link.child_active %} is-open{% endif %}"
+                {% if link.active or link.child_active %}style="height: auto;"{% endif %}>
+                <div class="collapsible-content__inner">
+                  <ul class="mobile-nav__sublist">
+                    {%- for childlink in link.links -%}
+                      {%- assign has_sub_dropdown = false -%}
+                      {%- assign grand_child_list_handle = childlink.url | handleize | append: forloop.index -%}
+                      {%- if childlink.links != blank -%}
+                        {%- assign has_sub_dropdown = true -%}
+                      {%- endif -%}
+
+                      <li class="mobile-nav__item">
+                        <div class="mobile-nav__child-item">
+                          {%- if childlink.url == '#' and has_sub_dropdown -%}
+                            <button type="button"
+                            aria-controls="Sublinklist-{{ child_list_handle }}-{{ grand_child_list_handle }}"{% if childlink.active or childlink.child_active %} aria-open="true"{% endif %}
+                            class="mobile-nav__link--button collapsible-trigger{% if childlink.active or childlink.child_active %} is-open{% endif %}">
+                              <span class="mobile-nav__faux-link"{% if childlink.active %} data-active="true"{% endif %}>{{ childlink.title | escape }}</span>
+                              {%- render 'collapsible-icons' -%}
+                            </button>
+                          {%- else -%}
+                            <a href="{{ childlink.url }}"
+                              class="mobile-nav__link"
+                              id="Sublabel-{{ grand_child_list_handle }}"
+                              {% if childlink.active %}data-active="true"{% endif %}>
+                              {{ childlink.title | escape }}
+                            </a>
+                          {%- endif -%}
+                          {%- if childlink.url != '#' and has_sub_dropdown -%}
+                            <button type="button"
+                              aria-controls="Sublinklist-{{ child_list_handle }}-{{ grand_child_list_handle }}"
+                              aria-labelledby="Sublabel-{{ grand_child_list_handle }}"
+                              class="collapsible-trigger{% if childlink.active or childlink.child_active %} is-open{% endif %}">
+                              {%- render 'collapsible-icons' -%}
+                            </button>
+                          {%- endif -%}
+                        </div>
+
+                        {%- if has_sub_dropdown -%}
+                          <div
+                            id="Sublinklist-{{ child_list_handle }}-{{ grand_child_list_handle }}"
+                            aria-labelledby="Sublabel-{{ grand_child_list_handle }}"
+                            class="mobile-nav__sublist collapsible-content collapsible-content--all{% if childlink.active or childlink.child_active %} is-open{% endif %}"
+                            {% if childlink.active or childlink.child_active %}style="height: auto;"{% endif %}>
+                            <div class="collapsible-content__inner">
+                              <ul class="mobile-nav__grandchildlist">
+                                {%- for grandchildlink in childlink.links -%}
+                                  <li class="mobile-nav__item">
+                                    <a href="{{ grandchildlink.url }}" class="mobile-nav__link"{% if grandchildlink.active %} data-active="true"{% endif %}>
+                                      {{ grandchildlink.title }}
+                                    </a>
+                                  </li>
+                                {%- endfor -%}
+                              </ul>
+                            </div>
+                          </div>
+                        {%- endif -%}
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+              </div>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+
+        {%- assign have_secondary_list = false -%}
+        {%- if section.settings.toolbar_menu != blank or shop.customer_accounts_enabled -%}
+          {%- assign have_secondary_list = true -%}
+        {%- endif -%}
+
+        {%- if have_secondary_list -%}
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            <div class="grid">
+              {%- if section.settings.toolbar_menu != blank -%}
+                {%- for link in toolbar_menu.links -%}
+                  {%- assign animation_row = animation_row | plus: 1 -%}
+                  <div class="grid__item one-half appear-animation appear-delay-{{ animation_row }} medium-up--hide">
+                    <a href="{{ link.url }}" class="mobile-nav__link">{{ link.title }}</a>
+                  </div>
+                {%- endfor -%}
+              {%- endif -%}
+
+              {%- if shop.customer_accounts_enabled -%}
+                {%- assign animation_row = animation_row | plus: 1 -%}
+                <div class="customer_btn_wrapper grid__item one-half appear-animation appear-delay-{{ animation_row }}">
+                  <a href="{{ routes.account_url }}" class="mobile-nav__link btn">
+                    {%- if customer -%}
+                      {{ 'layout.customer.account' | t }}
+                    {%- else -%}
+                      Sign In
+                    {%- endif -%}
+                  </a>
+                </div>
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endif -%}
+      </ul>
+
+      {%- assign animation_row = animation_row | plus: 1 -%}
+      <ul class="mobile-nav__social appear-animation appear-delay-{{ animation_row }}">
+        {%- if settings.social_instagram_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_instagram_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Instagram' }}">        
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.9991 8.8765C10.2788 8.8765 8.87492 10.2804 8.87492 12.0007C8.87492 13.721 10.2788 15.1249 11.9991 15.1249C13.7194 15.1249 15.1234 13.721 15.1234 12.0007C15.1234 10.2804 13.7194 8.8765 11.9991 8.8765ZM21.3694 12.0007C21.3694 10.707 21.3812 9.42493 21.3085 8.13353C21.2359 6.63353 20.8937 5.30228 19.7968 4.2054C18.6976 3.10618 17.3687 2.76634 15.8687 2.69368C14.5749 2.62103 13.2929 2.63275 12.0015 2.63275C10.7077 2.63275 9.4257 2.62103 8.13429 2.69368C6.63429 2.76634 5.30304 3.10853 4.20617 4.2054C3.10695 5.30462 2.7671 6.63353 2.69445 8.13353C2.62179 9.42728 2.63351 10.7093 2.63351 12.0007C2.63351 13.2921 2.62179 14.5765 2.69445 15.8679C2.7671 17.3679 3.10929 18.6992 4.20617 19.796C5.30538 20.8952 6.63429 21.2351 8.13429 21.3077C9.42804 21.3804 10.7101 21.3687 12.0015 21.3687C13.2952 21.3687 14.5773 21.3804 15.8687 21.3077C17.3687 21.2351 18.6999 20.8929 19.7968 19.796C20.896 18.6968 21.2359 17.3679 21.3085 15.8679C21.3835 14.5765 21.3694 13.2945 21.3694 12.0007ZM11.9991 16.8077C9.33898 16.8077 7.1921 14.6609 7.1921 12.0007C7.1921 9.34056 9.33898 7.19368 11.9991 7.19368C14.6593 7.19368 16.8062 9.34056 16.8062 12.0007C16.8062 14.6609 14.6593 16.8077 11.9991 16.8077ZM17.003 8.11946C16.3819 8.11946 15.8804 7.6179 15.8804 6.99681C15.8804 6.37572 16.3819 5.87415 17.003 5.87415C17.6241 5.87415 18.1257 6.37572 18.1257 6.99681C18.1259 7.14429 18.097 7.29036 18.0406 7.42665C17.9843 7.56294 17.9016 7.68677 17.7973 7.79106C17.693 7.89534 17.5692 7.97803 17.4329 8.03439C17.2966 8.09074 17.1505 8.11965 17.003 8.11946Z" fill="#AD8C7D"/>
+              </svg>
+              <span class="icon__fallback-text">Instagram</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_facebook_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_facebook_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Facebook' }}">           
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.9998 11.938C21.9764 10.0206 21.4089 8.14983 20.3641 6.54605C19.3194 4.94226 17.8409 3.67224 16.1029 2.88556C14.3647 2.09889 12.4394 1.82833 10.5536 2.10572C8.66784 2.38312 6.90009 3.19693 5.45859 4.45133C4.01707 5.70572 2.96183 7.34844 2.41713 9.18603C1.87244 11.0236 1.86096 12.9795 2.38408 14.8235C2.90719 16.6675 3.9431 18.3225 5.3698 19.594C6.79649 20.8654 8.55458 21.7002 10.437 21.9999V14.8685H7.93692V11.938H10.437V9.71182C10.3791 9.19422 10.4349 8.67011 10.6004 8.17652C10.7659 7.68294 11.037 7.23191 11.3946 6.85528C11.7523 6.47864 12.1877 6.18558 12.6702 5.99678C13.1527 5.80797 13.6706 5.72802 14.1871 5.76258C14.9369 5.7729 15.6849 5.84018 16.4247 5.96382V8.47928H15.1746C14.9591 8.45193 14.7401 8.47366 14.5341 8.54287C14.328 8.61209 14.14 8.72701 13.984 8.87914C13.828 9.03128 13.708 9.21674 13.6328 9.42179C13.5576 9.62693 13.5292 9.8464 13.5496 10.064V11.9632H16.3247L15.8746 14.8937H13.5621V21.937C15.9245 21.5611 18.0748 20.3456 19.6229 18.5111C21.1709 16.6765 22.0142 14.3446 21.9998 11.938Z" fill="#AD8C7D"/>
+              </svg>
+              <span class="icon__fallback-text">Facebook</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_youtube_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_youtube_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'YouTube' }}">
+              <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-youtube" viewBox="0 0 21 20"><path fill="#444" d="M-.196 15.803q0 1.23.812 2.092t1.977.861h14.946q1.165 0 1.977-.861t.812-2.092V3.909q0-1.23-.82-2.116T17.539.907H2.593q-1.148 0-1.969.886t-.82 2.116v11.894zm7.465-2.149V6.058q0-.115.066-.18.049-.016.082-.016l.082.016 7.153 3.806q.066.066.066.164 0 .066-.066.131l-7.153 3.806q-.033.033-.066.033-.066 0-.098-.033-.066-.066-.066-.131z"/></svg>
+              <span class="icon__fallback-text">YouTube</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_twitter_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_twitter_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Twitter' }}">
+              <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-twitter" viewBox="0 0 32 32"><title>twitter</title><path fill="#444" d="M31.281 6.733q-1.304 1.924-3.13 3.26 0 .13.033.408t.033.408q0 2.543-.75 5.086t-2.282 4.858-3.635 4.108-5.053 2.869-6.341 1.076q-5.282 0-9.65-2.836.913.065 1.5.065 4.401 0 7.857-2.673-2.054-.033-3.668-1.255t-2.266-3.146q.554.13 1.206.13.88 0 1.663-.261-2.184-.456-3.619-2.184t-1.435-3.977v-.065q1.239.652 2.836.717-1.271-.848-2.021-2.233t-.75-2.983q0-1.63.815-3.195 2.38 2.967 5.754 4.678t7.319 1.907q-.228-.815-.228-1.434 0-2.608 1.858-4.45t4.532-1.842q1.304 0 2.51.522t2.054 1.467q2.152-.424 4.01-1.532-.685 2.217-2.771 3.488 1.989-.261 3.619-.978z"/></svg>
+              <span class="icon__fallback-text">Twitter</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_pinterest_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_pinterest_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Pinterest' }}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.8761 1.99988C6.39906 1.99988 2 6.43458 2 11.9585C2 16.0586 4.40703 19.4895 7.89308 21.0797C7.89308 19.2122 7.88007 19.4529 9.30308 13.3804C8.52107 11.8023 9.12909 9.19674 10.8801 9.19674C13.3101 9.19674 11.6591 12.7995 11.3781 14.2173C11.1291 15.3054 11.9591 16.1426 12.9551 16.1426C14.8642 16.1426 16.1082 13.7152 16.1082 10.8706C16.1082 8.69449 14.6152 7.10443 12.0421 7.10443C7.46707 7.10443 6.30706 12.1996 7.89308 13.7988C8.29208 14.4029 7.89308 14.4311 7.89308 15.2217C7.61607 16.0577 5.40304 14.8426 5.40304 11.7075C5.40304 8.86186 7.72707 5.51506 12.4571 5.51506C16.1912 5.51506 18.6812 8.27621 18.6812 11.2056C18.6812 15.1383 16.5232 17.984 13.3701 17.984C12.2911 17.984 11.2951 17.3977 10.9631 16.7281C10.3601 19.0736 10.2381 20.2627 9.30308 21.5817C10.2161 21.8327 11.1291 22.0001 12.1251 22.0001C17.6022 22.0001 22.0002 17.5654 22.0002 12.0425C21.7522 6.43487 17.3532 1.99988 11.8761 1.99988Z" fill="#AD8C7D"/>
+              </svg>
+              <span class="icon__fallback-text">Pinterest</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_snapchat_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_snapchat_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Snapchat' }}">
+              <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-snapchat" viewBox="0 0 56.693 56.693"><path d="M28.66 51.683c-.128 0-.254-.004-.38-.01a3.24 3.24 0 0 1-.248.01c-2.944 0-4.834-1.336-6.661-2.628-1.262-.892-2.453-1.733-3.856-1.967a12.448 12.448 0 0 0-2.024-.17c-1.186 0-2.122.182-2.806.316-.415.081-.773.151-1.045.151-.285 0-.593-.061-.727-.519-.116-.397-.2-.78-.281-1.152-.209-.956-.357-1.544-.758-1.605-4.67-.722-6.006-1.705-6.304-2.403a.898.898 0 0 1-.072-.299.526.526 0 0 1 .44-.548c7.178-1.182 10.397-8.519 10.53-8.83l.012-.026c.44-.89.526-1.663.257-2.297-.493-1.16-2.1-1.67-3.163-2.008-.26-.082-.507-.16-.701-.237-2.123-.84-2.3-1.7-2.216-2.14.142-.747 1.142-1.268 1.95-1.268.222 0 .417.039.581.116.955.447 1.815.673 2.558.673 1.025 0 1.473-.43 1.528-.487-.026-.486-.059-.993-.092-1.517-.213-3.394-.478-7.61.595-10.018 3.218-7.215 10.043-7.776 12.057-7.776l.884-.009h.119c2.02 0 8.858.562 12.078 7.78 1.074 2.41.808 6.63.594 10.021l-.009.147c-.03.473-.058.932-.082 1.371.051.052.463.449 1.393.485h.001c.707-.028 1.52-.253 2.41-.67.262-.122.552-.148.75-.148.3 0 .607.058.86.164l.016.007c.721.255 1.193.76 1.204 1.289.009.497-.37 1.244-2.233 1.98-.193.076-.44.154-.7.237-1.065.338-2.671.848-3.164 2.008-.269.633-.183 1.406.257 2.297l.011.026c.134.311 3.35 7.646 10.532 8.83.265.043.454.28.44.548a.884.884 0 0 1-.074.3c-.296.693-1.632 1.675-6.303 2.397-.381.059-.53.556-.757 1.599-.083.38-.167.752-.282 1.144-.1.34-.312.5-.668.5h-.058c-.248 0-.6-.045-1.046-.133-.79-.154-1.677-.297-2.805-.297-.659 0-1.34.058-2.026.171-1.401.234-2.591 1.074-3.85 1.964-1.831 1.295-3.72 2.63-6.666 2.63z"/></svg>
+              <span class="icon__fallback-text">Snapchat</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_tiktok_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_tiktok_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'TickTok' }}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.457 0.583834C11.5962 0.566437 12.727 0.575483 13.8571 0.566437C13.8947 1.9798 14.4681 3.2519 15.3804 4.19414L15.3791 4.19275C16.361 5.07723 17.6386 5.65065 19.0471 5.74807L19.0666 5.74947V9.254C17.7361 9.22059 16.4848 8.9137 15.3568 8.38621L15.4138 8.40987C14.8683 8.14752 14.4069 7.87821 13.9685 7.57758L14.0047 7.60124C13.9963 10.1406 14.013 12.6799 13.9873 15.2102C13.9156 16.4997 13.4869 17.6757 12.7994 18.6576L12.8133 18.6361C11.6637 20.2825 9.80145 21.3633 7.68384 21.4273H7.6741C7.58851 21.4315 7.4876 21.4336 7.386 21.4336C6.1821 21.4336 5.05684 21.0981 4.09789 20.5157L4.12573 20.5317C2.38042 19.4816 1.17652 17.6848 0.953837 15.595L0.951054 15.5665C0.933656 15.1315 0.925306 14.6966 0.942703 14.2707C1.28369 10.945 4.07006 8.3723 7.45698 8.3723C7.83764 8.3723 8.21064 8.405 8.5732 8.46694L8.53423 8.46137C8.55162 9.74808 8.49943 11.0355 8.49943 12.3222C8.20507 12.2157 7.86547 12.1538 7.51126 12.1538C6.21133 12.1538 5.10555 12.9847 4.69636 14.1447L4.6901 14.1656C4.59755 14.4628 4.54396 14.8045 4.54396 15.158C4.54396 15.3013 4.55301 15.4433 4.56971 15.5825L4.56832 15.5658C4.79936 16.9896 6.01996 18.064 7.49178 18.064C7.53423 18.064 7.57598 18.0633 7.61773 18.0612H7.61147C8.62957 18.0306 9.51335 17.483 10.013 16.6736L10.02 16.6611C10.2058 16.4022 10.3331 16.0891 10.3756 15.7488L10.3763 15.739C10.4633 14.1823 10.4285 12.6347 10.4368 11.0779C10.4452 7.57341 10.4285 4.07723 10.4542 0.581747L10.457 0.583834Z" fill="#AD8C7D"/>
+              </svg>
+              <span class="icon__fallback-text">TikTok</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_tumblr_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_tumblr_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Tumblr' }}">
+              <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-tumblr" viewBox="0 0 32 32"><title>tumblr</title><path fill="#444" d="M6.997 13.822h3.022v10.237q0 1.852.414 3.047.463 1.097 1.438 1.95.951.877 2.511 1.438 1.487.512 3.388.512 1.657 0 3.096-.366 1.243-.244 3.242-1.194v-4.582q-2.023 1.389-4.192 1.389-1.072 0-2.145-.561-.634-.414-.951-1.146-.244-.804-.244-3.242v-7.483h6.581V9.239h-6.581V1.902h-3.949q-.195 2.072-.951 3.681-.756 1.56-1.901 2.486Q8.581 9.19 6.996 9.678v4.144z"/></svg>
+              <span class="icon__fallback-text">Tumblr</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_linkedin_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_linkedin_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'LinkedIn' }}">
+              <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-linkedin" viewBox="0 0 24 24"><path d="M4.98 3.5C4.98 4.881 3.87 6 2.5 6S.02 4.881.02 3.5C.02 2.12 1.13 1 2.5 1s2.48 1.12 2.48 2.5zM5 8H0v16h5V8zm7.982 0H8.014v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0V24H24V13.869c0-7.88-8.922-7.593-11.018-3.714V8z"/></svg>
+              <span class="icon__fallback-text">LinkedIn</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if settings.social_vimeo_link != blank -%}
+          <li class="mobile-nav__social-item">
+            <a target="_blank" rel="noopener" href="{{ settings.social_vimeo_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Vimeo' }}">
+              <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-vimeo" viewBox="0 0 32 32"><title>vimeo</title><path fill="#444" d="m.343 10.902 1.438 1.926q1.999-1.487 2.413-1.487 1.584 0 2.949 5.046l1.194 4.521q.828 3.132 1.292 4.814 1.804 5.046 4.534 5.046 4.339 0 10.53-8.336 6.069-7.922 6.288-12.528v-.536q0-5.606-4.485-5.752h-.341q-6.02 0-8.287 7.385 1.316-.561 2.291-.561 2.072 0 2.072 2.145 0 .268-.024.561-.146 1.731-2.047 4.729-1.95 3.144-2.901 3.144-1.267 0-2.242-4.777-.293-1.121-1.243-7.239-.414-2.632-1.536-3.9-.975-1.097-2.437-1.121-.195 0-.414.024-1.536.146-4.558 2.803-1.56 1.462-4.485 4.095z"/></svg>
+              <span class="icon__fallback-text">Vimeo</span>
+            </a>
+          </li>
+        {%- endif -%}
+      </ul>
+    </div>
+  </div>
+</div>

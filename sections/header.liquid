@@ -40,6 +40,11 @@
   .site-nav__dropdown-link:not(.site-nav__dropdown-link--top-level) {
     font-size: {{ settings.type_navigation_size }}px;
   }
+  .site-nav__dropdown,
+.site-nav__submenu {
+  background-color: #ffffff;
+}
+   
   {% if settings.type_navigation_capitalize %}
     .site-nav__link, .mobile-nav__link--top-level {
       text-transform: uppercase;
